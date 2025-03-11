@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router"
 
+
+
 export function Home(){
 
     const navegation = useNavigate()
@@ -9,6 +11,7 @@ export function Home(){
         <>
             <h1>Home teste</h1>
             <button onClick={()=> navegation("/login")}>Login</button>
+           
 
 
         </>
