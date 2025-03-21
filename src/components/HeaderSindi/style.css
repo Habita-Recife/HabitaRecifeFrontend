@@ -1,0 +1,35 @@
+.header {
+    background-color:#2C3E50;
+    /* padding: 20px; */
+    border-bottom: 1px solid #e0e0e0;
+    text-align: center;
+    border: none;
+  }
+  
+  .header-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ffffff;
+    padding-top: 20px;
+  }
+  
+  .header-info {
+    font-size: 16px;
+    color: #fffefe;
+  }
+  
+  .header-name {
+    font-weight: bold;
+    margin: 0;
+    text-align: end;
+    padding-right: 3rem;
+    padding-bottom:20px;
+  }
+  
+  .header-role {
+    margin: 0;
+    font-style: italic;
+    text-align: end;
+    padding-right: 3rem;
+    padding-bottom: 20px;
+  }

@@ -137,3 +137,13 @@
     text-decoration: underline;
     color: #d3d3d3;
   }
+
+  .Esqueci{
+    cursor: pointer;
+    box-shadow: #333;
+  }
+
+  .Esqueci:hover{
+    text-decoration: underline;
+    color: #d3d3d3;
+  }

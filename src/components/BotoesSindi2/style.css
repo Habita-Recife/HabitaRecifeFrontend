@@ -1,0 +1,23 @@
+
+
+.recent-requests-button {
+    background-color: #BBC3F3;
+    color: #ffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+    margin: 5px;
+    width: 70%;
+    height: 31vh; 
+    margin: auto;
+}
+
+.request-history-button {
+    background-color: #BBC3F3;
+    color: #fff;
+}
