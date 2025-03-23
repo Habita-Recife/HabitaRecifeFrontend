@@ -8,17 +8,30 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    animation: fadeIn 0.3s ease-in-out;
   }
   
-  /* .modal-content {
+  .modal-content {
     background: #2c3e50;
+    z-index: 9999;
     padding: 20px;
     border-radius: 10px;
     width: 400px;
     text-align: center;
     color: white;
-    box-shadow: 0 0 0 2px green;
-  } */
+    animation: fadeIn 0.3s ease-in-out;
+  } 
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
   
   .modal-content input {
     width: 100%;
@@ -26,6 +39,13 @@
     margin: 8px 0;
     border-radius: 5px;
     border: none;
+  }
+  
+  
+  .modal-content input[type="number"]::-webkit-inner-spin-button,
+  .modal-content input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
   }
   
   .modal-content button {
@@ -52,8 +72,8 @@
   }
   
   .modal-content h2{
-    
-    flex-direction: column;
-    align-items: center;
-    margin-left: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    margin-top: 0;
   }

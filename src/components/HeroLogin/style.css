@@ -1,3 +1,4 @@
+/*
 .hero-container {
     display: flex;
     align-items: center;
@@ -53,7 +54,7 @@
     width: 50%;
     height: 79.6vh;
     
-    background: #34495e;
+    
     padding: 30px;
     display: flex;
     text-align: center;
@@ -90,7 +91,7 @@
     border-radius: 10px;
     border: none;
     box-shadow: inset 5px 5px 5px rgba(0, 0, 0, 0.2);
-    outline: none;
+    outline: none; AINDA FALTA BOTAR ISSO PRO TALWIND
   }
   
   .forgot-password {
@@ -107,7 +108,7 @@
     cursor: pointer;
     font-size: 16px;
     margin-top: 10px;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease; NAO CONSEGUI BOTAR ISSO PRO TALWIND
     
   }
 
@@ -146,4 +147,4 @@
   .Esqueci:hover{
     text-decoration: underline;
     color: #d3d3d3;
-  }
+  }*/

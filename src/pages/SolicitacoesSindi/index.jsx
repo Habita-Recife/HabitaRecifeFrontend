@@ -1,7 +1,7 @@
 import HeaderSindi from "../../components/HeaderSindi"
 import SidebarSindi from "../../components/SideBarSindi"
 import RecentRequests from "../../components/SoliSindiRecent"
-import "./style.css"
+
 
 
 
