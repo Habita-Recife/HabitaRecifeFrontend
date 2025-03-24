@@ -1,19 +1,35 @@
 import { useState } from "react";
-import PropTypes from "prop-types"; // lembrem de importar as props!!
+import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo04.png";
-import { Search, Home, Bell, MessageCircle, Calendar, Headphones, Settings, LogOut } from "lucide-react";
+import { Search, Home, FileText, Wallet, Headphones, LogOut } from "lucide-react";
 
-const SidebarSindi = () => {
+const SidebarMorador = () => {
   const [search, setSearch] = useState("");
+  const navigate = useNavigate();
 
   const handleLogout = () => {
-    // esse botao ta sem logica, so serve pra debugar por enquanto...
     console.log("Usuário deslogado");
+    navigate("/login");
   };
 
   const handleButtonClick = (text) => {
-    // aqui eh so pra debugar, depois vou fazer a logica de navegacao de paginas..
-    console.log(`Botão ${text} clicado`);
+    switch(text) {
+      case "Início":
+        navigate("/DashboardMorador");
+        break;
+      case "Solicitações":
+        navigate("/SolicitacoesMorador");
+        break;
+      case "Controle Financeiro":
+        navigate("/ControleFinanceiro");
+        break;
+      case "Serviços":
+        navigate("/Servicos");
+        break;
+      default:
+        console.log(`Botão ${text} clicado`);
+    }
   };
 
   return (
@@ -37,11 +53,9 @@ const SidebarSindi = () => {
 
       <div className="flex flex-col gap-4">
         <SidebarButton icon={<Home size={18} />} text="Início" onClick={() => handleButtonClick("Início")} />
-        <SidebarButton icon={<Bell size={18} />} text="Notificações" onClick={() => handleButtonClick("Notificações")} />
-        <SidebarButton icon={<MessageCircle size={18} />} text="Comunicações" onClick={() => handleButtonClick("Comunicações")} />
-        <SidebarButton icon={<Calendar size={18} />} text="Reuniões" onClick={() => handleButtonClick("Reuniões")} />
+        <SidebarButton icon={<FileText size={18} />} text="Solicitações" onClick={() => handleButtonClick("Solicitações")} />
+        <SidebarButton icon={<Wallet size={18} />} text="Controle Financeiro" onClick={() => handleButtonClick("Controle Financeiro")} />
         <SidebarButton icon={<Headphones size={18} />} text="Serviços" onClick={() => handleButtonClick("Serviços")} />
-        <SidebarButton icon={<Settings size={18} />} text="Manutenção" onClick={() => handleButtonClick("Manutenção")} />
       </div>
 
       <button 
@@ -68,11 +82,10 @@ const SidebarButton = ({ icon, text, onClick }) => {
   );
 };
 
-// aprendi q tem que ficar validando essas props direto
 SidebarButton.propTypes = {
-  icon: PropTypes.element.isRequired, // obrigatorio o icone ser um elemento react
-  text: PropTypes.string.isRequired, // aqui eh obrigtorio string
-  onClick: PropTypes.func, // esse eh o unico que nao eh obrigatório
+  icon: PropTypes.element.isRequired,
+  text: PropTypes.string.isRequired,
+  onClick: PropTypes.func,
 };
 
-export default SidebarSindi;
+export default SidebarMorador;
