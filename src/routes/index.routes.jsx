@@ -1,31 +1,34 @@
-import { createBrowserRouter } from 'react-router'
+import { createBrowserRouter } from 'react-router-dom'
 import { Home } from '../pages/Home'
 import { Login } from '../pages/Login'
 import { SindiServi } from '../pages/SindiServi'
 import { SolicitacoesSindi } from '../pages/SolicitacoesSindi'
-import { DashboardMorador } from '../pages/DashboardMorador'
-
+import DashboardMorador from '../pages/DashboardMorador'
+import { ServicoMorador } from '../pages/ServicoMorador'
 
 export const router = createBrowserRouter([
-
     {
         path: "/",
-        element:<Home/>
+        element: <Home/>
     },
     {
         path: "/login",
-        element:<Login/>
+        element: <Login/>
     },
     {
         path: "/SindiServi",
-        element:<SindiServi/>
+        element: <SindiServi/>
     },
     {
         path: "/SolicitacoesSindi",
-        element:<SolicitacoesSindi/>
+        element: <SolicitacoesSindi/>
     },
     {
         path: "/DashboardMorador",
-        element:<DashboardMorador/>
+        element: <DashboardMorador/>
+    },
+    {
+        path: "/ServicoMorador",
+        element: <ServicoMorador/>
     }
 ]) 

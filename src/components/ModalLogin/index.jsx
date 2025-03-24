@@ -17,7 +17,7 @@ const ModalLogin = ({ isOpen, onClose }) => {
       return;
     }
 
-    // Aqui você pode adicionar a lógica de autenticação
+    // essa eh a logica de autenticação, mas n tem backend, entao vai ser console.log
     console.log("Login:", { email, password });
   };
 

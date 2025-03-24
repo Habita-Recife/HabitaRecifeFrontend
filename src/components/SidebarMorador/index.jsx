@@ -25,7 +25,7 @@ const SidebarMorador = () => {
         navigate("/ControleFinanceiro");
         break;
       case "Serviços":
-        navigate("/Servicos");
+        navigate("/ServicoMorador");
         break;
       default:
         console.log(`Botão ${text} clicado`);
@@ -58,9 +58,9 @@ const SidebarMorador = () => {
         <SidebarButton icon={<Headphones size={18} />} text="Serviços" onClick={() => handleButtonClick("Serviços")} />
       </div>
 
-      <button 
+      <button
         className="ml-40 flex items-center gap-2 text-gray-500 hover:text-red-500 bg-transparent border-none cursor-pointer transition-colors" 
-        onClick={handleLogout} 
+        onClick={handleLogout}
         aria-label="Logout"
       >
         <LogOut size={20} />
