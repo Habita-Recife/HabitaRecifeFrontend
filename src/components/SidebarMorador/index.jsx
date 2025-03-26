@@ -19,10 +19,10 @@ const SidebarMorador = () => {
         navigate("/DashboardMorador");
         break;
       case "Solicitações":
-        navigate("/SolicitacoesMorador");
+        navigate("/SolicitacaoMorador");
         break;
       case "Controle Financeiro":
-        navigate("/ControleFinanceiro");
+        navigate("/ControleMorador");
         break;
       case "Serviços":
         navigate("/ServicoMorador");

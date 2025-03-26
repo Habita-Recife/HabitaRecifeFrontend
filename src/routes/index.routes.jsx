@@ -5,7 +5,8 @@ import { SindiServi } from '../pages/SindiServi'
 import { SolicitacoesSindi } from '../pages/SolicitacoesSindi'
 import DashboardMorador from '../pages/DashboardMorador'
 import { ServicoMorador } from '../pages/ServicoMorador'
-
+import { SolicitacaoMorador } from '../pages/SolicitacaoMorador'
+import { ControleMorador } from '../pages/ControleMorador'
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -30,5 +31,13 @@ export const router = createBrowserRouter([
     {
         path: "/ServicoMorador",
         element: <ServicoMorador/>
+    },  
+    {
+        path: "/SolicitacaoMorador",
+        element: <SolicitacaoMorador/>
+    },
+    {
+        path: "/ControleMorador",
+        element: <ControleMorador/>
     }
 ]) 
