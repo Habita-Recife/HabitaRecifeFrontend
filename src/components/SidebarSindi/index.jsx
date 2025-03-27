@@ -2,28 +2,28 @@ import { useState } from "react";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
 import logo from "../../assets/logo04.png";
-import { Search, Home, Bell, User, Calendar, Headphones, Settings, LogOut } from "lucide-react"; // Changed MessageCircle to User
+import { Search, Home, Bell, User, Calendar, Headphones, DollarSign, LogOut } from "lucide-react";
 
 const SidebarSindi = () => {
-  const [search, setSearch] = useState("");
-  const navigate = useNavigate();
+  const [busca, setBusca] = useState("");
+  const navegar = useNavigate();
 
   const handleLogout = () => {
     console.log("Usuário deslogado");
-    navigate("/login");
+    navegar("/login");
   };
 
-  const routes = {
+  const rotas = {
     "Início": "/DashboardSindi",
     "Notificações": "/NotificacoesSindi",
     "Moradores": "/MoradoresSindi",
-    "Reuniões": "/sindico/reunioes",
-    "Serviços": "/sindico/servicos",
-    "Manutenção": "/sindico/manutencao"
+    "Reuniões": "/ReunioesSindi",
+    "Serviços": "/ServiSindico",
+    "Financeiro": "/FinanceiroSindi" 
   };
 
-  const handleNavigation = (route) => {
-    navigate(route);
+  const handleNavegacao = (rota) => {
+    navegar(rota);
   };
 
   return (
@@ -33,7 +33,7 @@ const SidebarSindi = () => {
           src={logo} 
           alt="Logo" 
           className="w-40 h-32 cursor-pointer" 
-          onClick={() => navigate("/sindico/dashboard")} 
+          onClick={() => navegar("/sindico/dashboard")} 
         />
         <h1 className="text-lg font-bold text-white">HABITA RECIFE</h1>
 
@@ -42,8 +42,8 @@ const SidebarSindi = () => {
           <input
             type="text"
             placeholder="Pesquisar..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            value={busca}
+            onChange={(e) => setBusca(e.target.value)}
             className="w-full pl-9 pr-3 py-2 rounded-lg bg-gray-200 border-none outline-none"
             aria-label="Pesquisar"
           />
@@ -51,13 +51,13 @@ const SidebarSindi = () => {
       </div>
 
       <div className="flex flex-col gap-4">
-        {Object.entries(routes).map(([text, route]) => (
-          <SidebarButton 
-            key={text}
-            icon={getIconComponent(text)} 
-            text={text} 
-            onClick={() => handleNavigation(route)} 
-            isActive={window.location.pathname === route}
+        {Object.entries(rotas).map(([texto, rota]) => (
+          <BotaoSidebar 
+            key={texto}
+            icone={getIcone(texto)} 
+            texto={texto} 
+            onClick={() => handleNavegacao(rota)} 
+            estaAtivo={window.location.pathname === rota}
           />
         ))}
       </div>
@@ -65,7 +65,7 @@ const SidebarSindi = () => {
       <button 
         className="ml-40 flex items-center gap-2 text-gray-500 hover:text-red-500 bg-transparent border-none cursor-pointer transition-colors" 
         onClick={handleLogout} 
-        aria-label="Logout"
+        aria-label="Sair"
       >
         <LogOut size={20} />
       </button>
@@ -73,38 +73,38 @@ const SidebarSindi = () => {
   );
 };
 
-const getIconComponent = (text) => {
-  const icons = {
+const getIcone = (texto) => {
+  const icones = {
     "Início": <Home size={18} />,
     "Notificações": <Bell size={18} />,
-    "Moradores": <User size={18} />, // Changed from MessageCircle to User
+    "Moradores": <User size={18} />,
     "Reuniões": <Calendar size={18} />,
     "Serviços": <Headphones size={18} />,
-    "Manutenção": <Settings size={18} />
+    "Financeiro": <DollarSign size={18} /> 
   };
-  return icons[text];
+  return icones[texto];
 };
 
-const SidebarButton = ({ icon, text, onClick, isActive = false }) => {
+const BotaoSidebar = ({ icone, texto, onClick, estaAtivo = false }) => {
   return (
     <button 
       className={`flex items-center gap-3 p-3 rounded-lg text-white border-none w-full cursor-pointer transition-colors hover:bg-[#006666] ${
-        isActive ? "bg-[#008080] font-bold" : "bg-[#008080]/80 hover:bg-[#006666]"
+        estaAtivo ? "bg-[#008080] font-bold" : "bg-[#008080]/80 hover:bg-[#006666]"
       }`} 
       onClick={onClick} 
-      aria-label={text}
+      aria-label={texto}
     >
-      {icon}
-      <span>{text}</span>
+      {icone}
+      <span>{texto}</span>
     </button>
   );
 };
 
-SidebarButton.propTypes = {
-  icon: PropTypes.element.isRequired,
-  text: PropTypes.string.isRequired,
+BotaoSidebar.propTypes = {
+  icone: PropTypes.element.isRequired,
+  texto: PropTypes.string.isRequired,
   onClick: PropTypes.func,
-  isActive: PropTypes.bool
+  estaAtivo: PropTypes.bool
 };
 
 export default SidebarSindi;

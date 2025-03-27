@@ -10,6 +10,10 @@ import { ControleMorador } from '../pages/ControleMorador'
 import { DashboardSindi } from '../pages/DashboardSindi'
 import { NotificacoesSindi } from '../pages/NotificacoesSindi'
 import { MoradoresSindi } from '../pages/MoradoresSindi'
+import { ReunioesSindi } from '../pages/ReunioesSindi'
+import { ServiSindico } from '../pages/ServiSindico'
+import { FinanceiroSindi } from '../pages/FinanceiroSindi'
+import { DashboardPorteiro } from '../pages/DashboardPorteiro'
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -54,5 +58,21 @@ export const router = createBrowserRouter([
     {
         path: "/MoradoresSindi",
         element: <MoradoresSindi/>
+    },
+    {
+        path: "/ReunioesSindi",
+        element: <ReunioesSindi/>
+    },
+    {
+        path: "/ServiSindico",
+        element: <ServiSindico/>
+    },
+    {
+        path: "/FinanceiroSindi",
+        element: <FinanceiroSindi/>
+    },
+    {
+        path: "/DashboardPorteiro",
+        element: <DashboardPorteiro/>
     }
 ]) 

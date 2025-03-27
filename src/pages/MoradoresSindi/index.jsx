@@ -235,7 +235,7 @@ export function MoradoresSindi() {
             </div>
           )}
 
-          {/* Modal de Pagamentos */}
+          {/* o modal que mostra os pagamentos do morador */}
           {showPaymentsModal && selectedResident && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl p-6 max-w-md w-full">
@@ -282,7 +282,7 @@ export function MoradoresSindi() {
             </div>
           )}
 
-          {/* Modal de Edição */}
+          {/* o modal pro sindico conseguir editar o morador */}
           {showEditModal && selectedResident && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl p-6 max-w-md w-full">
@@ -354,7 +354,7 @@ export function MoradoresSindi() {
             </div>
           )}
 
-          {/* Modal de Sucesso */}
+          {/* esse eh o modal de sucesso quando o cara editar o morador*/}
           {showSuccessModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl p-6 max-w-md w-full text-center">
