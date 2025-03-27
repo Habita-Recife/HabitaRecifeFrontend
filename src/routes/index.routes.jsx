@@ -7,6 +7,9 @@ import DashboardMorador from '../pages/DashboardMorador'
 import { ServicoMorador } from '../pages/ServicoMorador'
 import { SolicitacaoMorador } from '../pages/SolicitacaoMorador'
 import { ControleMorador } from '../pages/ControleMorador'
+import { DashboardSindi } from '../pages/DashboardSindi'
+import { NotificacoesSindi } from '../pages/NotificacoesSindi'
+import { MoradoresSindi } from '../pages/MoradoresSindi'
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -39,5 +42,17 @@ export const router = createBrowserRouter([
     {
         path: "/ControleMorador",
         element: <ControleMorador/>
+    },
+    {
+        path: "/DashboardSindi",
+        element: <DashboardSindi/>
+    },
+    {
+        path: "/NotificacoesSindi",
+        element: <NotificacoesSindi/>
+    },
+    {
+        path: "/MoradoresSindi",
+        element: <MoradoresSindi/>
     }
 ]) 
