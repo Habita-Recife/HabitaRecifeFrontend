@@ -58,13 +58,16 @@ const SidebarMorador = () => {
         <SidebarButton icon={<Headphones size={18} />} text="Serviços" onClick={() => handleButtonClick("Serviços")} />
       </div>
 
-      <button
-        className="ml-40 flex items-center gap-2 text-gray-500 hover:text-red-500 bg-transparent border-none cursor-pointer transition-colors" 
-        onClick={handleLogout}
-        aria-label="Logout"
-      >
-        <LogOut size={20} />
-      </button>
+      <div className="mb-4">
+        <button
+          className="flex items-center justify-start gap-3 p-3 rounded-lg text-white hover:bg-[#34495E] w-full transition-colors"
+          onClick={handleLogout}
+          aria-label="Sair"
+        >
+          <LogOut size={20} className="text-gray-300" />
+          <span className="text-gray-300 hover:text-white">Sair</span>
+        </button>
+      </div>
     </div>
   );
 };

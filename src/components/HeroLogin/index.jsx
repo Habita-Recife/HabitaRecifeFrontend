@@ -16,14 +16,14 @@ const HeroLogin = () => {
       <div className="bg-[#2C3E50] w-full lg:w-1/3 h-screen lg:h-screen p-4 sm:p-8 flex flex-col items-center text-white shadow-md relative">
         <div className="flex flex-col items-center gap-2 mb-4 sm:mb-6">
           <h1 className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] text-center">
-            Bem-vindo ao Habita Recife!
+            Bem-vindo ao <span className="text-[#008080]">Habita Recife</span>!
           </h1>
           <p className="text-white text-sm drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] max-w-2xl text-center">
             Gerencie seu condomínio de forma eficiente e prática. <br className="hidden sm:block" />
             Acompanhe avisos, notificações e novidades em um só lugar.
           </p>
         </div>
-        <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+        <h2 className="mb-4 sm:mb-6 text-2xl sm:text-3xl font-bold text-white">
           Login
         </h2>
         
@@ -39,7 +39,7 @@ const HeroLogin = () => {
             <button
               type="button"
               onClick={() => setOpenModalForgot(true)}
-              className="text-xs sm:text-sm text-gray-300 hover:text-white hover:underline transition-colors text-left mt-1"
+              className="text-xs sm:text-sm text-[#008080] hover:text-[#00A0A0] hover:underline transition-colors text-left mt-1"
             >
               Esqueceu a senha?
             </button>
@@ -47,16 +47,16 @@ const HeroLogin = () => {
 
           <div className="flex flex-col items-center gap-1 w-full">
             <ButtonComponent 
-              text="Entrar!" 
+              text="Entrar" 
               type="submit"
-              className="w-full sm:w-auto bg-black font-bold text-white rounded-xl py-2 hover:bg-gray-800 transition-all text-sm sm:text-base"
+             
             />
             <p className="text-xs sm:text-sm text-gray-300">
               Não tem conta?{" "}
               <button
                 type="button"
                 onClick={() => setOpenModal(true)}
-                className="text-xs sm:text-sm text-gray-300 hover:text-white hover:underline transition-colors"
+                className="text-xs sm:text-sm text-[#008080] hover:text-[#00A0A0] font-medium hover:underline transition-colors"
               >
                 Faça seu cadastro!
               </button>

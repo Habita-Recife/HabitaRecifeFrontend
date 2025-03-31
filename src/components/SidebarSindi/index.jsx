@@ -6,11 +6,17 @@ import { Search, Home, Bell, User, Calendar, Headphones, DollarSign, LogOut } fr
 
 const SidebarSindi = () => {
   const [busca, setBusca] = useState("");
+  const [mostrarConfirmacao, setMostrarConfirmacao] = useState(false);
   const navegar = useNavigate();
 
   const handleLogout = () => {
-    console.log("Usuário deslogado");
-    navegar("/login");
+    if (mostrarConfirmacao) {
+      console.log("Usuário deslogado");
+      navegar("/login");
+    } else {
+      setMostrarConfirmacao(true);
+      setTimeout(() => setMostrarConfirmacao(false), 3000); // Remove a confirmação após 3 segundos
+    }
   };
 
   const rotas = {
@@ -33,8 +39,8 @@ const SidebarSindi = () => {
           src={logo} 
           alt="Logo" 
           className="w-40 h-32 cursor-pointer" 
-          onClick={() => navegar("/sindico/dashboard")} 
-        />
+            onClick={() => navegar("/DashboardSindi")} 
+          />
         <h1 className="text-lg font-bold text-white">HABITA RECIFE</h1>
 
         <div className="relative w-full">
@@ -62,13 +68,24 @@ const SidebarSindi = () => {
         ))}
       </div>
 
-      <button 
-        className="ml-40 flex items-center gap-2 text-gray-500 hover:text-red-500 bg-transparent border-none cursor-pointer transition-colors" 
-        onClick={handleLogout} 
-        aria-label="Sair"
-      >
-        <LogOut size={20} />
-      </button>
+      <div className="mb-4 flex flex-col items-center">
+        <button 
+          className="flex items-center gap-3 p-3 rounded-lg text-white w-full hover:bg-[#34495E] transition-colors"
+          onClick={handleLogout}
+          aria-label="Sair"
+        >
+          <LogOut size={20} className="text-gray-300" />
+          <span className="text-gray-300 hover:text-white">
+            {mostrarConfirmacao ? "Confirmar saída?" : "Sair"}
+          </span>
+        </button>
+        
+        {mostrarConfirmacao && (
+          <div className="mt-2 text-xs text-gray-400 text-center">
+            Clique novamente para confirmar
+          </div>
+        )}
+      </div>
     </div>
   );
 };
