@@ -1,4 +1,5 @@
-import { ChefHat, Star, Phone, MapPin, MoreVertical, Search, Filter, ChevronDown, Hammer, Wrench, SquareStack, X } from 'lucide-react';
+import { ChefHat, Star, Phone, MapPin, MoreVertical, Search, Filter, ChevronDown,
+   Hammer, Wrench, SquareStack, X, Clock8 } from 'lucide-react';
 import { useState } from 'react';
 
 const ComponentServicos = () => {
@@ -8,6 +9,8 @@ const ComponentServicos = () => {
   const [servicoContratado, setServicoContratado] = useState('');
 
   // aq vai ser os servicos que vao ser mostrados na tela
+  // esse array vai ser dinamico e vai ser puxado do banco de dados assim espero ne
+  
   const servicos = [
     {
       id: 1,
@@ -17,7 +20,9 @@ const ComponentServicos = () => {
       telefone: "(81) 9 0000-0000",
       nota: 4.5,
       icone: ChefHat,
-      disponivel: true
+      disponivel: true,
+      PublicadoEm: new Date().toLocaleDateString('pt-BR')
+
     },
     {
       id: 2,
@@ -27,7 +32,8 @@ const ComponentServicos = () => {
       telefone: "(81) 9 1111-1111",
       nota: 4.2,
       icone: Wrench,
-      disponivel: false
+      disponivel: false,
+      PublicadoEm: new Date().toLocaleDateString('pt-BR')
     },
     {
       id: 3,
@@ -37,7 +43,8 @@ const ComponentServicos = () => {
       telefone: "(81) 9 2222-2222",
       nota: 4.8,
       icone: ChefHat,
-      disponivel: true
+      disponivel: true,
+      PublicadoEm: new Date().toLocaleDateString('pt-BR')
     },
     {
       id: 4,
@@ -47,7 +54,8 @@ const ComponentServicos = () => {
       telefone: "(81) 9 3333-3333",
       nota: 4.0,
       icone: Hammer,
-      disponivel: true
+      disponivel: true,
+      PublicadoEm: new Date().toLocaleDateString('pt-BR')
     },
     {
       id: 5,
@@ -57,7 +65,8 @@ const ComponentServicos = () => {
       telefone: "(81) 9 4444-4444",
       nota: 4.7,
       icone: SquareStack,
-      disponivel: true
+      disponivel: true,
+      PublicadoEm: 'Faz eh tempo kkk'
     },
     {
       id: 6,
@@ -67,7 +76,8 @@ const ComponentServicos = () => {
       telefone: "(81) 9 5555-5555",
       nota: 4.3,
       icone: Wrench,
-      disponivel: false
+      disponivel: false,
+      PublicadoEm: '1950-01-01'
     }
   ];
 
@@ -90,6 +100,7 @@ const ComponentServicos = () => {
   return (
     <div className="min-h-screen bg-gray-50 p-6 relative">
       {/* aq o modal estatica de servico contratado so ilustrativo kkk */}
+      {/* EU SEI QUE ISSO PODIA SER UM COMPONENTE SEPARADO MAS TA TUDIN BEM */}
       {modalAberto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl transform transition-all duration-300 scale-100">
@@ -203,6 +214,10 @@ const ComponentServicos = () => {
               <div className="flex items-center text-sm text-gray-500 mb-4">
                 <Phone className="w-4 h-4 mr-2" />
                 {servico.telefone}
+              </div>
+              <div className="flex items-center text-sm text-gray-500 mb-4">
+                <Clock8 className="w-4 h-4 mr-2" />
+                {servico.PublicadoEm}
               </div>
 
               <div className="flex justify-between items-center">

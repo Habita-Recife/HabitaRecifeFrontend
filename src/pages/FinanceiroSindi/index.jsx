@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import HeaderSindi from "../../components/HeaderSindi";
 import SidebarSindi from "../../components/SideBarSindi";
-import { Download, DollarSign, ArrowUp, ArrowDown, ChevronRight, FileText, Bell } from 'lucide-react';
+import { Download, DollarSign, ArrowUp, ArrowDown, ChevronRight, FileText, Bell, Eye, EyeOff } from 'lucide-react';
 
 export function FinanceiroSindi() {
     const [periodo, setPeriodo] = useState('mensal');
+    const [mostrarValores, setMostrarValores] = useState(false);
     
     const resumoBancario = {
         saldoAtual: 45280.50,
@@ -40,6 +41,18 @@ export function FinanceiroSindi() {
         alert('Relatório gerado com sucesso!');
     };
 
+    const formatarValor = (valor) => {
+        if (mostrarValores) {
+            return valor.toLocaleString('pt-BR', {
+                style: 'currency',
+                currency: 'BRL',
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+        }
+        return '•••••';
+    };
+
     return (
         <div className="flex h-screen bg-gray-50">
             <SidebarSindi />
@@ -48,7 +61,7 @@ export function FinanceiroSindi() {
                 <HeaderSindi />
                 <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
                     <div className="space-y-6">
-                        {/* Cabeçalho */}
+                        
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
@@ -57,29 +70,34 @@ export function FinanceiroSindi() {
                                 </h1>
                                 <p className="text-gray-500 text-sm">Resumo completo das finanças</p>
                             </div>
-                            <button 
-                                onClick={handleGerarRelatorio}
-                                className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors"
-                            >
-                                <Download size={18} />
-                                Gerar Relatório
-                            </button>
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={() => setMostrarValores(!mostrarValores)}
+                                    className="flex items-center gap-1 text-gray-600 hover:text-teal-600 transition-colors"
+                                    title={mostrarValores ? "Ocultar valores" : "Mostrar valores"}
+                                >
+                                    {mostrarValores ? <EyeOff size={18} /> : <Eye size={18} />}
+                                    <span className="text-sm">{mostrarValores ? "Ocultar" : "Mostrar"}</span>
+                                </button>
+                                <button 
+                                    onClick={handleGerarRelatorio}
+                                    className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors"
+                                >
+                                    <Download size={18} />
+                                    Gerar Relatório
+                                </button>
+                            </div>
                         </div>
 
-                        {/* Cards de Resumo */}
+                        
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            {/* Card Saldo */}
+                            
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="text-sm text-gray-500 mb-1">Saldo Atual</p>
                                         <p className="text-xl font-bold text-gray-800 truncate">
-                                            {resumoBancario.saldoAtual.toLocaleString('pt-BR', {
-                                                style: 'currency',
-                                                currency: 'BRL',
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            })}
+                                            {formatarValor(resumoBancario.saldoAtual)}
                                         </p>
                                     </div>
                                     <div className="bg-teal-100 p-2 rounded-lg">
@@ -89,18 +107,13 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Disponível</p>
                             </div>
 
-                            {/* Card Receitas */}
+                           
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="text-sm text-gray-500 mb-1">Receitas ({periodo})</p>
                                         <p className="text-xl font-bold text-gray-800 truncate">
-                                            {resumoBancario.receitas.toLocaleString('pt-BR', {
-                                                style: 'currency',
-                                                currency: 'BRL',
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            })}
+                                            {formatarValor(resumoBancario.receitas)}
                                         </p>
                                     </div>
                                     <div className="bg-green-100 p-2 rounded-lg">
@@ -110,18 +123,13 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Total arrecadado</p>
                             </div>
 
-                            {/* Card Despesas */}
+                            
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
                                         <p className="text-sm text-gray-500 mb-1">Despesas ({periodo})</p>
                                         <p className="text-xl font-bold text-gray-800 truncate">
-                                            {resumoBancario.despesas.toLocaleString('pt-BR', {
-                                                style: 'currency',
-                                                currency: 'BRL',
-                                                minimumFractionDigits: 2,
-                                                maximumFractionDigits: 2
-                                            })}
+                                            {formatarValor(resumoBancario.despesas)}
                                         </p>
                                     </div>
                                     <div className="bg-red-100 p-2 rounded-lg">
@@ -131,7 +139,7 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Total gasto</p>
                             </div>
 
-                            {/* Card Relatórios */}
+                           
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -146,7 +154,7 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        {/* Filtros */}
+                        
                         <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                             <h2 className="text-lg font-semibold text-gray-800 mb-3">Filtrar por período</h2>
                             <div className="flex flex-wrap gap-2">
@@ -171,7 +179,7 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        {/* Últimas Movimentações */}
+                        
                         <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold text-gray-800">Últimas Movimentações</h2>
@@ -193,14 +201,17 @@ export function FinanceiroSindi() {
                                         </div>
                                         <p className={`font-semibold ${mov.tipo === 'receita' ? 'text-green-600' : 'text-red-600'}`}>
                                             {mov.tipo === 'receita' ? '+' : '-'} 
-                                            {mov.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                            {mostrarValores ? 
+                                                mov.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) :
+                                                '•••••'
+                                            }
                                         </p>
                                     </div>
                                 ))}
                             </div>
                         </div>
 
-                        {/* Tabela Completa */}
+                        
                         <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-100">
                             <div className="p-4 border-b border-gray-200">
                                 <h2 className="text-lg font-semibold text-gray-800">Histórico Completo</h2>
@@ -226,7 +237,10 @@ export function FinanceiroSindi() {
                                                     </span>
                                                 </td>
                                                 <td className={`px-4 py-3 whitespace-nowrap text-sm font-medium ${mov.tipo === 'receita' ? 'text-green-600' : 'text-red-600'}`}>
-                                                    {mov.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                                                    {mostrarValores ? 
+                                                        mov.valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) :
+                                                        '•••••'
+                                                    }
                                                 </td>
                                             </tr>
                                         ))}
