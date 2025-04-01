@@ -74,7 +74,8 @@ const HeroLogin = () => {
 
       <div 
         style={{ backgroundImage: `url(${backgroundImage})` }} 
-        className="hidden lg:block w-full lg:w-2/3 h-screen bg-cover bg-no-repeat flex flex-col justify-between items-center text-center"
+        className="hidden lg:block w-full lg:w-2/3 h-screen bg-cover bg-no-repeat  flex flex-col justify-between items-center text-center"
+
       >
         <div className="w-full flex justify-end p-4 sm:p-8">
           <img src={logo} alt="Habita Recife Logo" className="w-40 sm:w-60 h-32 sm:h-40" />

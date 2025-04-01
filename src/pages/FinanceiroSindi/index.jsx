@@ -1,12 +1,27 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HeaderSindi from "../../components/HeaderSindi";
 import SidebarSindi from "../../components/SideBarSindi";
-import { Download, DollarSign, ArrowUp, ArrowDown, ChevronRight, FileText, Bell, Eye, EyeOff } from 'lucide-react';
+import { Download, DollarSign, ArrowUp, ArrowDown, ChevronRight, FileText, Bell, Eye, EyeOff, Clock } from 'lucide-react';
 
 export function FinanceiroSindi() {
     const [periodo, setPeriodo] = useState('mensal');
     const [mostrarValores, setMostrarValores] = useState(false);
-    
+    const [currentTime, setCurrentTime] = useState(new Date());
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setCurrentTime(new Date());
+        }, 60000);
+        return () => clearInterval(timer);
+    }, []);
+
+    const formatTime = (date) => {
+        return date.toLocaleTimeString('pt-BR', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+
     const resumoBancario = {
         saldoAtual: 45280.50,
         receitas: 32500.00,
@@ -61,27 +76,40 @@ export function FinanceiroSindi() {
                 <HeaderSindi />
                 <div className="flex-1 p-4 sm:p-6 overflow-y-auto">
                     <div className="space-y-6">
-                        
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
-                                <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 flex items-center gap-2">
-                                    <DollarSign className="text-teal-600" />
-                                    Financeiro do Condomínio
-                                </h1>
-                                <p className="text-gray-500 text-sm">Resumo completo das finanças</p>
+                                <div className="flex items-center gap-3">
+                                    <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#008080] via-[#006666] to-[#004444] bg-clip-text text-transparent">
+                                        Financeiro
+                                    </h1>
+                                    <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">
+                                        Síndico
+                                    </span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-4 mt-4">
+                                    <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
+                                        <Clock className="w-5 h-5 text-[#008080]" />
+                                        <span className="font-medium text-gray-700">{formatTime(currentTime)}</span>
+                                    </div>
+                                    <button 
+                                        onClick={() => setMostrarValores(!mostrarValores)}
+                                        className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300"
+                                    >
+                                        {mostrarValores ? (
+                                            <EyeOff className="w-5 h-5 text-[#008080]" />
+                                        ) : (
+                                            <Eye className="w-5 h-5 text-[#008080]" />
+                                        )}
+                                        <span className="font-medium text-gray-700">
+                                            {mostrarValores ? "Ocultar valores" : "Mostrar valores"}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                             <div className="flex items-center gap-3">
                                 <button 
-                                    onClick={() => setMostrarValores(!mostrarValores)}
-                                    className="flex items-center gap-1 text-gray-600 hover:text-teal-600 transition-colors"
-                                    title={mostrarValores ? "Ocultar valores" : "Mostrar valores"}
-                                >
-                                    {mostrarValores ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    <span className="text-sm">{mostrarValores ? "Ocultar" : "Mostrar"}</span>
-                                </button>
-                                <button 
                                     onClick={handleGerarRelatorio}
-                                    className="flex items-center gap-2 bg-teal-600 hover:bg-teal-700 text-white px-4 py-2 rounded-lg transition-colors"
+                                    className="flex items-center gap-2 bg-gradient-to-r from-[#008080] to-[#006666] text-white px-5 py-2.5 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:from-[#006666] hover:to-[#004444]"
                                 >
                                     <Download size={18} />
                                     Gerar Relatório
@@ -89,9 +117,7 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                            
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -107,7 +133,6 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Disponível</p>
                             </div>
 
-                           
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -123,7 +148,6 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Total arrecadado</p>
                             </div>
 
-                            
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -139,7 +163,6 @@ export function FinanceiroSindi() {
                                 <p className="text-xs text-gray-400 mt-2">Total gasto</p>
                             </div>
 
-                           
                             <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                                 <div className="flex justify-between items-start">
                                     <div>
@@ -154,7 +177,6 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        
                         <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                             <h2 className="text-lg font-semibold text-gray-800 mb-3">Filtrar por período</h2>
                             <div className="flex flex-wrap gap-2">
@@ -179,7 +201,6 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        
                         <div className="bg-white rounded-xl shadow p-4 border border-gray-100">
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-lg font-semibold text-gray-800">Últimas Movimentações</h2>
@@ -211,7 +232,6 @@ export function FinanceiroSindi() {
                             </div>
                         </div>
 
-                        
                         <div className="bg-white rounded-xl shadow overflow-hidden border border-gray-100">
                             <div className="p-4 border-b border-gray-200">
                                 <h2 className="text-lg font-semibold text-gray-800">Histórico Completo</h2>
