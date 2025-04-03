@@ -1,0 +1,14 @@
+
+.titulo01 {
+    font-size: 24px;
+    color: #333;
+    margin-top: 3rem;
+    margin-bottom: 6rem;
+    padding: 20px;
+    height: 3rem;
+    position: relative;
+    width: 100%;
+    background-color: #D9D9D9;
+    border-radius: 14px;
+    text-align: start;
+}
