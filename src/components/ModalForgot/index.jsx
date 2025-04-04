@@ -7,12 +7,28 @@ import ModalForgotSuccess from "../ModalForgotSuccess";
 const ModalForgot = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setShowSuccessModal(true);
+    setIsLoading(true);
+    
+    try {
+      // aqui seria a parte da api vini
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // nessa parte da api, eu vou enviar o email para o usuario
+      // tipo isso aqui:
+      // await api.post('/auth/forgot-password', { email }); nao sei ainda, acho q vou por RecuperarSenha.jsx
+      
+      setShowSuccessModal(true);
+    } catch (error) {
+      console.error("Erro ao enviar email:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -27,20 +43,20 @@ const ModalForgot = ({ isOpen, onClose }) => {
           </button>
 
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Recuperar Senha</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Redefinir Senha</h2>
             <p className="text-gray-300 text-sm">
-              Digite seu email para receber um código de verificação
+              Enviaremos um link seguro para redefinir sua senha no email cadastrado
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Email:
+                Email cadastrado:
               </label>
               <InputComponent
                 typeInput="email"
-                placeholderText="Seu email"
+                placeholderText="Digite seu email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -49,16 +65,17 @@ const ModalForgot = ({ isOpen, onClose }) => {
 
             <div className="flex flex-col gap-2">
               <ButtonComponent
-                text="Enviar Código"
+                text={isLoading ? "Enviando..." : "Enviar Link"}
                 type="submit"
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors"
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={onClose}
                 className="text-sm text-gray-400 hover:text-white transition-colors"
               >
-                Cancelar
+                Voltar para login
               </button>
             </div>
           </form>
