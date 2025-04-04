@@ -5,6 +5,8 @@ import HeaderSindi from "../../components/HeaderSindi";
 import { Bell, Calendar, FileText, Wallet, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Plus, ChevronRight, Clock, MapPin, Building2, Home, Car, Shield, PartyPopper, Baby, Bike } from "lucide-react";
 import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
 import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
+import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
+import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
 
 export function DashboardSindi() {
   const navigate = useNavigate();
@@ -310,6 +312,42 @@ export function DashboardSindi() {
                     <p className="text-3xl font-bold text-gray-900">{solicitacoes.length}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#008080]" />
+                    Lista de Moradores
+                  </h2>
+                  <button 
+                    onClick={() => setShowCadastrarMoradorModal(true)}
+                    className="text-sm text-white bg-[#008080] hover:bg-[#006666] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Adicionar Morador
+                  </button>
+                </div>
+                <ListaDeMoradoresSindi />
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#2C3E50]" />
+                    Lista de Porteiros
+                  </h2>
+                  <button 
+                    onClick={() => setShowCadastrarPorteiroModal(true)}
+                    className="text-sm text-white bg-[#2C3E50] hover:bg-[#1a2633] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Adicionar Porteiro
+                  </button>
+                </div>
+                <ListaDePorteirosSindi />
               </div>
             </div>
 
@@ -756,8 +794,8 @@ export function DashboardSindi() {
             </form>
           </div>
         </div>
-        
       )}
+
       <CadPorteiroSucessSindi isOpen={showSuccessPorteiroModal} onClose={() => setShowSuccessPorteiroModal(false)} />
       <CadMoradorSucessSindi isOpen={showSuccessMoradorModal} onClose={() => setShowSuccessMoradorModal(false)} />
     </div>
