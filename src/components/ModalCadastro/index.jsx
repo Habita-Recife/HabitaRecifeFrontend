@@ -174,7 +174,7 @@ const ModalCadastro = ({ isOpen, onClose }) => {
                 className="w-full bg-[#3E4E5F] border border-[#4E5D6C] text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
               >
                 <option value="morador">Morador</option>
-                <option value="sindico">Síndico</option>
+                
                 <option value="porteiro">Porteiro</option>
               </select>
             </div>
