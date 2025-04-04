@@ -14,6 +14,7 @@ import { ReunioesSindi } from '../pages/ReunioesSindi'
 import { ServiSindico } from '../pages/ServiSindico'
 import { FinanceiroSindi } from '../pages/FinanceiroSindi'
 import { DashboardPorteiro } from '../pages/DashboardPorteiro'
+import { DashboardPrefeitura } from '../pages/DashboardPrefeitura'
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -74,5 +75,9 @@ export const router = createBrowserRouter([
     {
         path: "/DashboardPorteiro",
         element: <DashboardPorteiro/>
+    },
+    {
+        path: "/DashboardPrefeitura",
+        element: <DashboardPrefeitura/>
     }
 ]) 
