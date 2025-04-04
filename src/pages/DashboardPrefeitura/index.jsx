@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import HeaderPrefeitura from "../../components/HeaderPrefeitura";
 import SidebarPorteiro from "../../components/SidebarPorteiro";
@@ -15,16 +15,16 @@ export function DashboardPrefeitura() {
   const [condominioData, setCondominioData] = useState({
     nome: "",
     endereco: "",
-    bairro: "",
-    quantidadeUnidades: "",
-    sindicoResponsavel: ""
+    quantidadeApartamentos: "",
+    quantidadeBlocos: ""
   });
 
   const [sindicoData, setSindicoData] = useState({
+    condominioResponsavel: "",
     nome: "",
     email: "",
-    cpf: "",
-    condominioResponsavel: ""
+    telefone: "",
+    cpf: ""
   });
 
   // Dados de exemplo
@@ -33,17 +33,15 @@ export function DashboardPrefeitura() {
       id: 1,
       nome: "Residencial Jardins",
       endereco: "Rua das Flores, 123",
-      bairro: "Centro",
-      quantidadeUnidades: 120,
-      sindicoResponsavel: "Carlos Silva"
+      quantidadeApartamentos: 120,
+      quantidadeBlocos: 3
     },
     {
       id: 2,
       nome: "Edifício Golden Tower",
       endereco: "Av. Principal, 456",
-      bairro: "Boa Vista",
-      quantidadeUnidades: 80,
-      sindicoResponsavel: "Ana Oliveira"
+      quantidadeApartamentos: 80,
+      quantidadeBlocos: 2
     }
   ]);
 
@@ -52,6 +50,7 @@ export function DashboardPrefeitura() {
       id: 1,
       nome: "Carlos Silva",
       email: "carlos@email.com",
+      telefone: "(11) 99999-9999",
       cpf: "123.456.789-00",
       condominioResponsavel: "Residencial Jardins"
     },
@@ -59,6 +58,7 @@ export function DashboardPrefeitura() {
       id: 2,
       nome: "Ana Oliveira",
       email: "ana@email.com",
+      telefone: "(11) 98888-8888",
       cpf: "987.654.321-00",
       condominioResponsavel: "Edifício Golden Tower"
     }
@@ -68,16 +68,17 @@ export function DashboardPrefeitura() {
     e.preventDefault();
     
     if (editingCondominio) {
-      // e aqui pode editar o condominio que ja existe
+      // aqui serve pra editar o condominio que ja existe
       setCondominios(condominios.map(c => 
         c.id === editingCondominio.id ? {...condominioData, id: editingCondominio.id} : c
       ));
     } else {
-      // essa eh a parte de adicionar um novo condominio
+      // aqui serve pra adicionar um novo condominio
       const newCondominio = {
         ...condominioData,
         id: Date.now(),
-        quantidadeUnidades: parseInt(condominioData.quantidadeUnidades)
+        quantidadeApartamentos: parseInt(condominioData.quantidadeApartamentos),
+        quantidadeBlocos: parseInt(condominioData.quantidadeBlocos)
       };
       setCondominios([...condominios, newCondominio]);
     }
@@ -87,9 +88,8 @@ export function DashboardPrefeitura() {
     setCondominioData({
       nome: "",
       endereco: "",
-      bairro: "",
-      quantidadeUnidades: "",
-      sindicoResponsavel: ""
+      quantidadeApartamentos: "",
+      quantidadeBlocos: ""
     });
     setEditingCondominio(null);
   };
@@ -103,7 +103,7 @@ export function DashboardPrefeitura() {
         s.id === editingSindico.id ? {...sindicoData, id: editingSindico.id} : s
       ));
     } else {
-      // ou adicionar um novo sindico por aq
+      // aqui serve pra adicionar um novo sindico
       const newSindico = {
         ...sindicoData,
         id: Date.now()
@@ -114,10 +114,11 @@ export function DashboardPrefeitura() {
     setShowCadastrarSindicoModal(false);
     setShowSuccessModal(true);
     setSindicoData({
+      condominioResponsavel: "",
       nome: "",
       email: "",
-      cpf: "",
-      condominioResponsavel: ""
+      telefone: "",
+      cpf: ""
     });
     setEditingSindico(null);
   };
@@ -126,9 +127,8 @@ export function DashboardPrefeitura() {
     setCondominioData({
       nome: condominio.nome,
       endereco: condominio.endereco,
-      bairro: condominio.bairro,
-      quantidadeUnidades: condominio.quantidadeUnidades.toString(),
-      sindicoResponsavel: condominio.sindicoResponsavel
+      quantidadeApartamentos: condominio.quantidadeApartamentos.toString(),
+      quantidadeBlocos: condominio.quantidadeBlocos.toString()
     });
     setEditingCondominio(condominio);
     setShowCadastrarCondominioModal(true);
@@ -140,10 +140,11 @@ export function DashboardPrefeitura() {
 
   const handleEditSindico = (sindico) => {
     setSindicoData({
+      condominioResponsavel: sindico.condominioResponsavel,
       nome: sindico.nome,
       email: sindico.email,
-      cpf: sindico.cpf,
-      condominioResponsavel: sindico.condominioResponsavel
+      telefone: sindico.telefone,
+      cpf: sindico.cpf
     });
     setEditingSindico(sindico);
     setShowCadastrarSindicoModal(true);
@@ -263,9 +264,8 @@ export function DashboardPrefeitura() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Endereço</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bairro</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Unidades</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Síndico</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamentos</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Blocos</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                   </thead>
@@ -274,9 +274,8 @@ export function DashboardPrefeitura() {
                       <tr key={condominio.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{condominio.nome}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.endereco}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.bairro}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.quantidadeUnidades}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.sindicoResponsavel}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.quantidadeApartamentos}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{condominio.quantidadeBlocos}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                           <button 
                             onClick={() => handleEditCondominio(condominio)}
@@ -315,6 +314,7 @@ export function DashboardPrefeitura() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Condomínio</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
@@ -325,6 +325,7 @@ export function DashboardPrefeitura() {
                       <tr key={sindico.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{sindico.nome}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sindico.email}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sindico.telefone}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sindico.cpf}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{sindico.condominioResponsavel}</td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
@@ -365,9 +366,8 @@ export function DashboardPrefeitura() {
                 setCondominioData({
                   nome: "",
                   endereco: "",
-                  bairro: "",
-                  quantidadeUnidades: "",
-                  sindicoResponsavel: ""
+                  quantidadeApartamentos: "",
+                  quantidadeBlocos: ""
                 });
               }} className="text-gray-500 hover:text-gray-700">
                 ✕
@@ -387,7 +387,7 @@ export function DashboardPrefeitura() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Endereço</label>
+                <label className="block text-gray-700 mb-2">Endereço Completo</label>
                 <input
                   type="text"
                   value={condominioData.endereco}
@@ -398,39 +398,25 @@ export function DashboardPrefeitura() {
               </div>
 
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Bairro</label>
-                <input
-                  type="text"
-                  value={condominioData.bairro}
-                  onChange={(e) => setCondominioData({...condominioData, bairro: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Quantidade de Unidades</label>
+                <label className="block text-gray-700 mb-2">Número de Apartamentos</label>
                 <input
                   type="number"
-                  value={condominioData.quantidadeUnidades}
-                  onChange={(e) => setCondominioData({...condominioData, quantidadeUnidades: e.target.value})}
+                  value={condominioData.quantidadeApartamentos}
+                  onChange={(e) => setCondominioData({...condominioData, quantidadeApartamentos: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                   required
                 />
               </div>
 
               <div className="mb-6">
-                <label className="block text-gray-700 mb-2">Síndico Responsável</label>
-                <select
-                  value={condominioData.sindicoResponsavel}
-                  onChange={(e) => setCondominioData({...condominioData, sindicoResponsavel: e.target.value})}
+                <label className="block text-gray-700 mb-2">Número de Blocos</label>
+                <input
+                  type="number"
+                  value={condominioData.quantidadeBlocos}
+                  onChange={(e) => setCondominioData({...condominioData, quantidadeBlocos: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                >
-                  <option value="">Selecione um síndico</option>
-                  {sindicos.map(sindico => (
-                    <option key={sindico.id} value={sindico.nome}>{sindico.nome}</option>
-                  ))}
-                </select>
+                  required
+                />
               </div>
 
               <div className="flex justify-end space-x-3">
@@ -442,9 +428,8 @@ export function DashboardPrefeitura() {
                     setCondominioData({
                       nome: "",
                       endereco: "",
-                      bairro: "",
-                      quantidadeUnidades: "",
-                      sindicoResponsavel: ""
+                      quantidadeApartamentos: "",
+                      quantidadeBlocos: ""
                     });
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
@@ -475,10 +460,11 @@ export function DashboardPrefeitura() {
                 setShowCadastrarSindicoModal(false);
                 setEditingSindico(null);
                 setSindicoData({
+                  condominioResponsavel: "",
                   nome: "",
                   email: "",
-                  cpf: "",
-                  condominioResponsavel: ""
+                  telefone: "",
+                  cpf: ""
                 });
               }} className="text-gray-500 hover:text-gray-700">
                 ✕
@@ -487,7 +473,22 @@ export function DashboardPrefeitura() {
             
             <form onSubmit={handleSindicoSubmit}>
               <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Nome Completo</label>
+                <label className="block text-gray-700 mb-2">Condomínio</label>
+                <select
+                  value={sindicoData.condominioResponsavel}
+                  onChange={(e) => setSindicoData({...sindicoData, condominioResponsavel: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
+                  required
+                >
+                  <option value="">Selecione um condomínio</option>
+                  {condominios.map(condominio => (
+                    <option key={condominio.id} value={condominio.nome}>{condominio.nome}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Nome do Síndico</label>
                 <input
                   type="text"
                   value={sindicoData.nome}
@@ -509,6 +510,17 @@ export function DashboardPrefeitura() {
               </div>
 
               <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Telefone</label>
+                <input
+                  type="tel"
+                  value={sindicoData.telefone}
+                  onChange={(e) => setSindicoData({...sindicoData, telefone: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
+                  required
+                />
+              </div>
+
+              <div className="mb-6">
                 <label className="block text-gray-700 mb-2">CPF</label>
                 <input
                   type="text"
@@ -519,20 +531,6 @@ export function DashboardPrefeitura() {
                 />
               </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 mb-2">Condomínio Responsável</label>
-                <select
-                  value={sindicoData.condominioResponsavel}
-                  onChange={(e) => setSindicoData({...sindicoData, condominioResponsavel: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                >
-                  <option value="">Selecione um condomínio</option>
-                  {condominios.map(condominio => (
-                    <option key={condominio.id} value={condominio.nome}>{condominio.nome}</option>
-                  ))}
-                </select>
-              </div>
-
               <div className="flex justify-end space-x-3">
                 <button
                   type="button"
@@ -540,10 +538,11 @@ export function DashboardPrefeitura() {
                     setShowCadastrarSindicoModal(false);
                     setEditingSindico(null);
                     setSindicoData({
+                      condominioResponsavel: "",
                       nome: "",
                       email: "",
-                      cpf: "",
-                      condominioResponsavel: ""
+                      telefone: "",
+                      cpf: ""
                     });
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
