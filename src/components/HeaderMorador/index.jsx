@@ -7,7 +7,6 @@ const HeaderMorador = () => {
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
 
-  // nessa parte do codigo serve pra quando o cara clicar fora do dropdown ele fecha
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -75,7 +74,6 @@ const HeaderMorador = () => {
           }`} 
         />
 
-        {/* to testando um dropdown no header de morador  kkk*/}
         {isDropdownOpen && (
           <div className="absolute top-16 right-0 w-64 bg-white rounded-lg shadow-xl z-50 overflow-hidden border border-gray-200">
             <div className="p-4 border-b border-gray-200">
@@ -94,14 +92,6 @@ const HeaderMorador = () => {
               <a href="#" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
                 <User size={16} className="mr-3 text-gray-500" />
                 Meu Perfil
-              </a>
-              <a href="#" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-                <Settings size={16} className="mr-3 text-gray-500" />
-                Configurações
-              </a>
-              <a href="#" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-                <HelpCircle size={16} className="mr-3 text-gray-500" />
-                Ajuda
               </a>
             </div>
 
