@@ -10,7 +10,7 @@ export function DashboardPorteiro() {
   const [encomendas, setEncomendas] = useState([]);
   const [visitantes, setVisitantes] = useState([]);
   
-  // Estados para os formulários
+
   const [novaEncomenda, setNovaEncomenda] = useState({
     morador: '',
     apartamento: '',
@@ -27,14 +27,14 @@ export function DashboardPorteiro() {
     saida: null
   });
 
-  // Manipuladores de modal
+
   const handleOpenEncomendaModal = () => setShowEncomendaModal(true);
   const handleCloseEncomendaModal = () => setShowEncomendaModal(false);
   
   const handleOpenVisitanteModal = () => setShowVisitanteModal(true);
   const handleCloseVisitanteModal = () => setShowVisitanteModal(false);
 
-  // Manipuladores de formulário
+
   const handleEncomendaChange = (e) => {
     const { name, value } = e.target;
     setNovaEncomenda(prev => ({ ...prev, [name]: value }));
@@ -45,7 +45,7 @@ export function DashboardPorteiro() {
     setNovoVisitante(prev => ({ ...prev, [name]: value }));
   };
 
-  // Submissões
+
   const handleSubmitEncomenda = (e) => {
     e.preventDefault();
     setEncomendas([...encomendas, { ...novaEncomenda, id: Date.now() }]);
@@ -72,7 +72,7 @@ export function DashboardPorteiro() {
     handleCloseVisitanteModal();
   };
 
-  // Registrar saída do visitante
+
   const handleSaidaVisitante = (id) => {
     setVisitantes(visitantes.map(visitante => 
       visitante.id === id 
@@ -89,15 +89,15 @@ export function DashboardPorteiro() {
         <HeaderPorteiro />
         
         <main className="flex-1 p-6 overflow-auto">
-          {/* Saudação */}
+          
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800">
               Bom dia, {porteiro.nome.split(' ')[0]}!
             </h1>
-            <p className="text-gray-600">Aqui estão as ações disponíveis</p>
+            
           </div>
 
-          {/* Botões de Ação */}
+          
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <button 
               onClick={handleOpenEncomendaModal}
@@ -126,7 +126,7 @@ export function DashboardPorteiro() {
             </button>
           </div>
 
-          {/* Histórico de Encomendas */}
+          
           <div className="bg-white rounded-xl shadow-md p-6 mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Package className="w-5 h-5 text-blue-600" />
@@ -161,7 +161,7 @@ export function DashboardPorteiro() {
             )}
           </div>
 
-          {/* Histórico de Visitantes */}
+         
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-green-600" />
@@ -214,7 +214,7 @@ export function DashboardPorteiro() {
         </main>
       </div>
 
-      {/* Modal de Encomenda */}
+     
       {showEncomendaModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
@@ -295,7 +295,7 @@ export function DashboardPorteiro() {
         </div>
       )}
 
-      {/* Modal de Visitante */}
+      
       {showVisitanteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">

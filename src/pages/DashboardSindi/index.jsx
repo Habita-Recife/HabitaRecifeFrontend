@@ -3,6 +3,10 @@ import { useNavigate } from "react-router-dom";
 import SidebarSindi from "../../components/SideBarSindi";
 import HeaderSindi from "../../components/HeaderSindi";
 import { Bell, Calendar, FileText, Wallet, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Plus, ChevronRight, Clock, MapPin, Building2, Home, Car, Shield, PartyPopper, Baby, Bike } from "lucide-react";
+import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
+import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
+import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
+import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
 
 export function DashboardSindi() {
   const navigate = useNavigate();
@@ -10,6 +14,10 @@ export function DashboardSindi() {
   const [showAvisoModal, setShowAvisoModal] = useState(false);
   const [showReuniaoModal, setShowReuniaoModal] = useState(false);
   const [showInadimplentesModal, setShowInadimplentesModal] = useState(false);
+  const [showCadastrarMoradorModal, setShowCadastrarMoradorModal] = useState(false);
+  const [showCadastrarPorteiroModal, setShowCadastrarPorteiroModal] = useState(false);
+  const [showSuccessMoradorModal, setShowSuccessMoradorModal] = useState(false);
+  const [showSuccessPorteiroModal, setShowSuccessPorteiroModal] = useState(false);
   
   const [avisoData, setAvisoData] = useState({
     titulo: "",
@@ -23,6 +31,20 @@ export function DashboardSindi() {
     horario: "",
     local: "Salão de Festas",
     descricao: ""
+  });
+
+  const [moradorData, setMoradorData] = useState({
+    nome: "",
+    email: "",
+    veiculo: "",
+    tipo: "proprietario",
+    cpf: ""
+  });
+
+  const [porteiroData, setPorteiroData] = useState({
+    nome: "",
+    email: "",
+    cpf: ""
   });
 
   useEffect(() => {
@@ -122,6 +144,22 @@ export function DashboardSindi() {
     });
   };
 
+  const handleMoradorSubmit = (e) => {
+    e.preventDefault();
+    console.log("Morador cadastrado:", moradorData);
+    setShowCadastrarMoradorModal(false);
+    setShowSuccessMoradorModal(true);
+    setMoradorData({ nome: "", email: "", veiculo: "", tipo: "proprietario", cpf: "" });
+  };
+
+  const handlePorteiroSubmit = (e) => {
+    e.preventDefault();
+    console.log("Porteiro cadastrado:", porteiroData);
+    setShowCadastrarPorteiroModal(false);
+    setShowSuccessPorteiroModal(true);
+    setPorteiroData({ nome: "", email: "", cpf: "" });
+  };
+
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <SidebarSindi />
@@ -132,13 +170,31 @@ export function DashboardSindi() {
           <div className="space-y-8">
             <div className="flex flex-col lg:flex-row gap-8">
               <div className="flex-1">
-                <div className="flex items-center gap-3">
-                  <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#008080] via-[#006666] to-[#004444] bg-clip-text text-transparent">
-                    Dashboard Síndico
-                  </h1>
-                  <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">
-                    Painel de Controle
-                  </span>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="flex items-center gap-3">
+                    <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#008080] via-[#006666] to-[#004444] bg-clip-text text-transparent">
+                      Dashboard Síndico
+                    </h1>
+                    <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">
+                      Painel de Controle
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-3">
+                    <button 
+                      onClick={() => setShowCadastrarMoradorModal(true)}
+                      className="flex items-center gap-2 bg-[#008080] hover:bg-[#006666] text-white px-4 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      <Users className="w-4 h-4" />
+                      Cadastrar Morador
+                    </button>
+                    <button 
+                      onClick={() => setShowCadastrarPorteiroModal(true)}
+                      className="flex items-center gap-2 bg-[#2C3E50] hover:bg-[#1a2633] text-white px-4 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
+                    >
+                      <Users className="w-4 h-4" />
+                      Cadastrar Porteiro
+                    </button>
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-4 mt-4">
                   <div className="flex items-center gap-2 bg-white/90 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-lg border border-gray-100 hover:shadow-xl transition-all duration-300">
@@ -256,6 +312,42 @@ export function DashboardSindi() {
                     <p className="text-3xl font-bold text-gray-900">{solicitacoes.length}</p>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#008080]" />
+                    Lista de Moradores
+                  </h2>
+                  <button 
+                    onClick={() => setShowCadastrarMoradorModal(true)}
+                    className="text-sm text-white bg-[#008080] hover:bg-[#006666] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Adicionar Morador
+                  </button>
+                </div>
+                <ListaDeMoradoresSindi />
+              </div>
+
+              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-[#2C3E50]" />
+                    Lista de Porteiros
+                  </h2>
+                  <button 
+                    onClick={() => setShowCadastrarPorteiroModal(true)}
+                    className="text-sm text-white bg-[#2C3E50] hover:bg-[#1a2633] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Adicionar Porteiro
+                  </button>
+                </div>
+                <ListaDePorteirosSindi />
               </div>
             </div>
 
@@ -552,6 +644,160 @@ export function DashboardSindi() {
           </div>
         </div>
       )}
+
+      {showCadastrarMoradorModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Morador</h3>
+              <button onClick={() => setShowCadastrarMoradorModal(false)} className="text-gray-500 hover:text-gray-700">
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleMoradorSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Nome Completo</label>
+                <input
+                  type="text"
+                  value={moradorData.nome}
+                  onChange={(e) => setMoradorData({...moradorData, nome: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">E-mail</label>
+                <input
+                  type="email"
+                  value={moradorData.email}
+                  onChange={(e) => setMoradorData({...moradorData, email: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Veículo</label>
+                <input
+                  type="text"
+                  value={moradorData.veiculo}
+                  onChange={(e) => setMoradorData({...moradorData, veiculo: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  placeholder="Modelo e placa do veículo"
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Tipo</label>
+                <select
+                  value={moradorData.tipo}
+                  onChange={(e) => setMoradorData({...moradorData, tipo: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                >
+                  <option value="proprietario">Proprietário</option>
+                  <option value="familiar">Familiar</option>
+                </select>
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-gray-700 mb-2">CPF</label>
+                <input
+                  type="text"
+                  value={moradorData.cpf}
+                  onChange={(e) => setMoradorData({...moradorData, cpf: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCadastrarMoradorModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                >
+                  Cadastrar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showCadastrarPorteiroModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Porteiro</h3>
+              <button onClick={() => setShowCadastrarPorteiroModal(false)} className="text-gray-500 hover:text-gray-700">
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handlePorteiroSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Nome Completo</label>
+                <input
+                  type="text"
+                  value={porteiroData.nome}
+                  onChange={(e) => setPorteiroData({...porteiroData, nome: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">E-mail</label>
+                <input
+                  type="email"
+                  value={porteiroData.email}
+                  onChange={(e) => setPorteiroData({...porteiroData, email: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="mb-6">
+                <label className="block text-gray-700 mb-2">CPF</label>
+                <input
+                  type="text"
+                  value={porteiroData.cpf}
+                  onChange={(e) => setPorteiroData({...porteiroData, cpf: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowCadastrarPorteiroModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                >
+                  Cadastrar
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      <CadPorteiroSucessSindi isOpen={showSuccessPorteiroModal} onClose={() => setShowSuccessPorteiroModal(false)} />
+      <CadMoradorSucessSindi isOpen={showSuccessMoradorModal} onClose={() => setShowSuccessMoradorModal(false)} />
     </div>
   );
 }

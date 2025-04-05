@@ -47,7 +47,7 @@ const checkmarkStyle = `
 }
 `;
 
-const ModalCadSucess = ({ isOpen, onClose }) => {
+export default function CadPorteiroSucessSindi({ isOpen, onClose }) {
   const [showCheckmark, setShowCheckmark] = useState(false);
 
   useEffect(() => {
@@ -78,9 +78,9 @@ const ModalCadSucess = ({ isOpen, onClose }) => {
             </svg>
           )}
           
-          <h2 className="text-2xl font-bold text-white mb-2">Conta Ativada com Sucesso!</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Porteiro Cadastrado com Sucesso!</h2>
           <p className="text-gray-300 text-sm mb-6">
-            Sua conta foi ativada com sucesso. Agora você pode fazer login e acessar todas as funcionalidades.
+            O porteiro foi cadastrado com sucesso no sistema e já pode acessar todas as funcionalidades.
           </p>
         </div>
 
@@ -88,17 +88,14 @@ const ModalCadSucess = ({ isOpen, onClose }) => {
           <ButtonComponent
             text="OK"
             onClick={onClose}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 rounded-lg transition-colors"
           />
         </div>
       </div>
     </div>
   );
-};
+}
 
-ModalCadSucess.propTypes = {
+CadPorteiroSucessSindi.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
 };
-
-export default ModalCadSucess;
