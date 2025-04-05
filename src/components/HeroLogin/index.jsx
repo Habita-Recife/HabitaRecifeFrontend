@@ -15,14 +15,14 @@ const HeroLogin = () => {
   const [openModalForgot, setOpenModalForgot] = useState(false);
   const [openModalCadastro, setOpenModalCadastro] = useState(false);
   const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const navigate = useNavigate();
-   async function handleSubmit(e) {
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+   
+  async function handleSubmit(e) {
     e.preventDefault();
     loginUser(email, password);
     navigate('/DashboardSindi');
   }
-   
     
   return (
     <div className="flex flex-col lg:flex-row h-screen">
