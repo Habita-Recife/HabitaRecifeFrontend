@@ -126,3 +126,42 @@ export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
       }
     });
   };
+
+/**
+ * Morador
+ */
+export function cadastrarMorador(morador) {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API_URL}/v1/morador`, morador, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function listarMoradores() {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/morador`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function editarMorador(idMorador, morador) {
+    const token = localStorage.getItem('token');
+    return axios.put(`${API_URL}/v1/morador/${idMorador}`, morador, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function excluirMorador(idMorador) {
+    const token = localStorage.getItem('token');
+    return axios.delete(`${API_URL}/v1/morador/${idMorador}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}

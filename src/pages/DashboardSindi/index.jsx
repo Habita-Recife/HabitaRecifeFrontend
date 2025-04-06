@@ -7,6 +7,9 @@ import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
 import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
+import { cadastrarMorador } from "../../utils/api";
+import { listarCondominios } from "../../utils/api";
+import { getDados } from "../../utils/utils";
 
 export function DashboardSindi() {
   const navigate = useNavigate();
@@ -34,11 +37,12 @@ export function DashboardSindi() {
   });
 
   const [moradorData, setMoradorData] = useState({
-    nome: "",
-    email: "",
-    veiculo: "",
-    tipo: "proprietario",
-    cpf: ""
+    nomeMorador: "",
+    emailMorador: "",
+    veiculoMorador: "",
+    tipoMorador: "PROPRIETARIO",
+    cpfMorador: "",
+    id_condominio: ""
   });
 
   const [porteiroData, setPorteiroData] = useState({
@@ -48,6 +52,21 @@ export function DashboardSindi() {
   });
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    listarCondominios().then((response) => {
+      const condominio = response.data.find(c =>
+        token && c.sindico != null && c.sindico.emailSindico === getDados(token).sub
+      );
+  
+      if (condominio) {
+        setMoradorData((prev) => ({
+          ...prev,
+          id_condominio: condominio.idCondominio
+        }));
+      }
+    });
+
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 60000);
@@ -146,10 +165,14 @@ export function DashboardSindi() {
 
   const handleMoradorSubmit = (e) => {
     e.preventDefault();
-    console.log("Morador cadastrado:", moradorData);
-    setShowCadastrarMoradorModal(false);
-    setShowSuccessMoradorModal(true);
-    setMoradorData({ nome: "", email: "", veiculo: "", tipo: "proprietario", cpf: "" });
+    
+    cadastrarMorador(moradorData).then((response) => {
+      console.log(response);
+      setShowCadastrarMoradorModal(false);
+      setShowSuccessMoradorModal(true);
+      setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "" });
+    });
+    
   };
 
   const handlePorteiroSubmit = (e) => {
@@ -321,13 +344,6 @@ export function DashboardSindi() {
                     <Users className="w-5 h-5 text-[#008080]" />
                     Lista de Moradores
                   </h2>
-                  <button 
-                    onClick={() => setShowCadastrarMoradorModal(true)}
-                    className="text-sm text-white bg-[#008080] hover:bg-[#006666] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Adicionar Morador
-                  </button>
                 </div>
                 <ListaDeMoradoresSindi />
             </div>
@@ -338,13 +354,6 @@ export function DashboardSindi() {
                   <Users className="w-5 h-5 text-[#2C3E50]" />
                   Lista de Porteiros
                 </h2>
-                <button 
-                  onClick={() => setShowCadastrarPorteiroModal(true)}
-                  className="text-sm text-white bg-[#2C3E50] hover:bg-[#1a2633] flex items-center gap-2 px-4 py-2 rounded-full transition-all duration-300"
-                >
-                  <Plus className="w-4 h-4" />
-                  Adicionar Porteiro
-                </button>
               </div>
               <ListaDePorteirosSindi />
             </div>
@@ -658,8 +667,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">Nome Completo</label>
                 <input
                   type="text"
-                  value={moradorData.nome}
-                  onChange={(e) => setMoradorData({...moradorData, nome: e.target.value})}
+                  value={moradorData.nomeMorador}
+                  onChange={(e) => setMoradorData({...moradorData, nomeMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
@@ -669,8 +678,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">E-mail</label>
                 <input
                   type="email"
-                  value={moradorData.email}
-                  onChange={(e) => setMoradorData({...moradorData, email: e.target.value})}
+                  value={moradorData.emailMorador}
+                  onChange={(e) => setMoradorData({...moradorData, emailMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
@@ -680,8 +689,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">Veículo</label>
                 <input
                   type="text"
-                  value={moradorData.veiculo}
-                  onChange={(e) => setMoradorData({...moradorData, veiculo: e.target.value})}
+                  value={moradorData.veiculoMorador}
+                  onChange={(e) => setMoradorData({...moradorData, veiculoMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   placeholder="Modelo e placa do veículo"
                 />
@@ -690,12 +699,12 @@ export function DashboardSindi() {
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">Tipo</label>
                 <select
-                  value={moradorData.tipo}
-                  onChange={(e) => setMoradorData({...moradorData, tipo: e.target.value})}
+                  value={moradorData.tipoMorador}
+                  onChange={(e) => setMoradorData({...moradorData, tipoMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                 >
-                  <option value="proprietario">Proprietário</option>
-                  <option value="familiar">Familiar</option>
+                  <option key="PROPRIETARIO" value="PROPRIETARIO">Proprietário</option>
+                  <option key="FAMILIAR" value="FAMILIAR">Familiar</option>
                 </select>
               </div>
 
@@ -703,8 +712,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">CPF</label>
                 <input
                   type="text"
-                  value={moradorData.cpf}
-                  onChange={(e) => setMoradorData({...moradorData, cpf: e.target.value})}
+                  value={moradorData.cpfMorador}
+                  onChange={(e) => setMoradorData({...moradorData, cpfMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
