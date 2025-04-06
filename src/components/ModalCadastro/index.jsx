@@ -74,17 +74,35 @@ const ModalCadastro = ({ isOpen, onClose }) => {
       setOpenModal(true);
     } catch (error) {
       console.error("Erro no cadastro:", error);
-
+      
       if (error.response) {
-        if (error.response.status === 404 ||
-          error.response.status === 400 ||
-          error.response.data?.message?.toLowerCase().includes("email") ||
-          error.response.data?.message?.toLowerCase().includes("não encontrado") ||
-          error.response.data?.message?.toLowerCase().includes("não cadastrado")) {
 
-          setError("Email não pré-cadastrado no sistema. Por favor, entre em contato com o síndico do seu condomínio.");
+        const errorMessage = typeof error.response.data === 'string' 
+          ? error.response.data 
+          : error.response.data?.message || "";
+        
+        const isEmailNotAssociated = 
+          errorMessage.includes("não está associado") || 
+          errorMessage.includes("não encontrado") ||
+          errorMessage.includes("não cadastrado") ||
+          errorMessage.includes("não pré-cadastrado");
+        
+        if (isEmailNotAssociated) {
+          switch (formData.role) {
+            case "MORADOR":
+              setError("Email não pré-cadastrado no sistema. Entre em contato com o síndico ou selecione o tipo de usuário correto.");
+              break;
+            case "SINDICO":
+              setError("Email não pré-cadastrado no sistema. Entre em contato com a prefeitura ou selecione o tipo de usuário correto.");
+              break;
+            case "PORTEIRO":
+              setError("Email não pré-cadastrado no sistema. Entre em contato com o síndico ou selecione o tipo de usuário correto.");
+              break;
+            default:
+              setError("Email não pré-cadastrado no sistema. Entre em contato com o administrador.");
+          }
         } else {
-          setError(error.response.data?.message || "Ocorreu um erro durante o cadastro.");
+          setError(errorMessage || "Ocorreu um erro durante o cadastro.");
         }
       } else {
         setError("Ocorreu um erro durante o cadastro. Verifique sua conexão e tente novamente.");
@@ -92,7 +110,7 @@ const ModalCadastro = ({ isOpen, onClose }) => {
     } finally {
       setIsLoading(false);
     }
-  };
+    };
 
   const handleCloseSuccessModal = () => {
     setOpenModal(false);

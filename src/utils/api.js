@@ -174,3 +174,6 @@ export function excluirMorador(idMorador) {
     return axios.post(`${API_URL}/v1/users/register`, userData);
 }
 
+export function forgotPassword(email) {
+    return axios.post(`${API_URL}/v1/users/forgot-password?email=${email}`);
+}
