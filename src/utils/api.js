@@ -166,11 +166,11 @@ export function excluirMorador(idMorador) {
     });
 }
 
-/**
+   /**
  * Usuario
  */
 
-export function cadastrarUsuario(userData) {
+   export function cadastrarUsuario(userData) {
     return axios.post(`${API_URL}/v1/users/register`, userData);
 }
 
@@ -178,25 +178,8 @@ export function forgotPassword(email) {
     return axios.post(`${API_URL}/v1/users/forgot-password?email=${email}`);
 }
 
-/**
- * Porteiro
- */
-export function cadastrarPorteiro(porteiro) {
-    const token = localStorage.getItem('token');
-    return axios.post(`${API_URL}/v1/porteiro`, porteiro, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-}
-
-export function listarPorteiros() {
-    const token = localStorage.getItem('token');
-    return axios.get(`${API_URL}/v1/porteiro`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
+export function resetPassword(token, newPassword, confirmPassword) {
+    return axios.post(`${API_URL}/v1/users/reset-password?token=${token}&newPassword=${newPassword}&confirmPassword=${confirmPassword}`);
 }
 
 export function editarPorteiro(idPorteiro, porteiro) {
@@ -216,3 +199,76 @@ export function excluirPorteiro(idPorteiro) {
         }
     });
 }
+
+export function listarPorteiros() {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/porteiro`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function cadastrarPorteiro(porteiro) {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API_URL}/v1/porteiro`, porteiro, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorMorador(idMorador) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/morador/${idMorador}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorPorteiro(idPorteiro) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/porteiro/${idPorteiro}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorPorteiroAtivo(idPorteiro) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/porteiro/ativo/${idPorteiro}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorMoradorAtivo(idMorador) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/morador/ativo/${idMorador}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorPorteiroInativo(idPorteiro) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/porteiro/inativo/${idPorteiro}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorMoradorInativo(idMorador) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/morador/inativo/${idMorador}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+export function listarVisitantesPorPorteiroAtivoPorMorador(idPorteiro, idMorador) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante/porteiro/ativo/morador/${idPorteiro}/${idMorador}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });}

@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { resetPassword } from "../../utils/api";
 import { X, Lock, CheckCircle, ArrowLeft } from "lucide-react";
 import InputComponent from "../../components/InputComponent";
 import ButtonComponent from "../../components/ButtonComponent";
-import { useNavigate } from "react-router-dom";
 
 const checkmarkStyle = `
 @keyframes draw {
@@ -53,48 +54,78 @@ export function RecuperarSenha() {
     novaSenha: "",
     confirmarSenha: ""
   });
+  const [senhaInvalida, setSenhaInvalida] = useState(false);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [recoveryToken, setRecoveryToken] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const queryParams = new URLSearchParams(window.location.search);
+    const token = queryParams.get("token");
+    if (token) {
+      setRecoveryToken(token);
+    } else {
+      setError("Token de recuperação não encontrado.");
+    }
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       [name]: value
     }));
+
+    if (name === "novaSenha") {
+      const senhaValida =
+        value &&
+        value.length >= 8 &&
+        value.match(/[A-Za-z]/) &&
+        value.match(/[0-9]/);
+      setSenhaInvalida(value !== "" && !senhaValida);
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
-    // Validações básicas
+    let errors = [];
+
     if (!formData.novaSenha || !formData.confirmarSenha) {
-      setError("Preencha todos os campos");
-      setIsLoading(false);
-      return;
+      errors.push("Todos os campos são obrigatórios.");
     }
 
-    if (formData.novaSenha.length < 6) {
-      setError("A senha deve ter pelo menos 6 caracteres");
-      setIsLoading(false);
-      return;
+    if (senhaInvalida) {
+      errors.push("A senha deve ter pelo menos 8 caracteres, incluindo letras e números.");
     }
 
     if (formData.novaSenha !== formData.confirmarSenha) {
-      setError("As senhas não coincidem");
+      errors.push("As senhas não coincidem.");
+    }
+
+    if (errors.length > 0) {
+      setError(errors.join(" "));
       setIsLoading(false);
       return;
     }
 
-    // Simulação de request kkk
-    setTimeout(() => {
-      setError("");
+    try {
+      if (!recoveryToken) {
+        setError("Token de recuperação não encontrado.");
+        setIsLoading(false);
+        return;
+      }
+
+      await resetPassword(recoveryToken, formData.novaSenha, formData.confirmarSenha);
       setShowSuccessModal(true);
+    } catch (error) {
+      setError("Erro ao redefinir a senha. Tente novamente.");
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleBackToLogin = () => {
@@ -141,6 +172,11 @@ export function RecuperarSenha() {
                   required
                   showEyeIcon={true}
                 />
+                {senhaInvalida && (
+                  <p className="mt-1 text-sm text-red-400">
+                    A senha deve ter pelo menos 8 caracteres, incluindo letras e números.
+                  </p>
+                )}
               </div>
               
               <div>
@@ -156,9 +192,6 @@ export function RecuperarSenha() {
                   required
                   showEyeIcon={true}
                 />
-                {formData.novaSenha && formData.confirmarSenha && formData.novaSenha !== formData.confirmarSenha && (
-                  <p className="mt-1 text-sm text-red-400">As senhas não coincidem</p>
-                )}
               </div>
 
               {error && (
@@ -178,7 +211,6 @@ export function RecuperarSenha() {
         </div>
       </div>
 
-      {/* Adicione o modal aqui com uma funcao pra voltar ao login caso tenha sucesso */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <style>{checkmarkStyle}</style>
