@@ -1,15 +1,58 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import HeaderPorteiro from "../../components/HeaderPorteiro";
 import SidebarPorteiro from "../../components/SidebarPorteiro";
 import { Package, UserPlus, Clock, CheckCircle } from 'lucide-react';
+import { cadastrarVisitante, listarVisitantes, registrarSaidaVisitante, obterDadosPorteiroLogado } from '../../utils/api';
+import { getDados } from '../../utils/utils';
 
 export function DashboardPorteiro() {
+
+  const navigate = useNavigate();
+
   const [porteiro] = useState({ nome: "Carlos Porteiro" });
   const [showEncomendaModal, setShowEncomendaModal] = useState(false);
   const [showVisitanteModal, setShowVisitanteModal] = useState(false);
   const [encomendas, setEncomendas] = useState([]);
   const [visitantes, setVisitantes] = useState([]);
-  
+  const [isLoading, setIsLoading] = useState(true);
+  const [idPorteiro] = useState(3);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      const dadosUsuario = getDados(token);
+
+      if (dadosUsuario.roles[0] !== 'ROLE_PORTEIRO') {
+        navigate('/login');
+      } else {
+        obterDadosPorteiroLogado()
+          .then(response => {
+            console.log("Dados do porteiro:", response.data);
+            setPorteiro(response.data);
+            setIdPorteiro(response.data.idPorteiro);
+          })
+          .catch(error => {
+            console.error("Erro ao obter dados do porteiro:", error);
+          });
+
+        listarVisitantes().then((response) => {
+          if (response.data && response.data.length > 0) {
+            console.log("Dados retornados pela API:", JSON.stringify(response.data[0], null, 2));
+          }
+
+          setVisitantes(response.data);
+          setIsLoading(false);
+        }).catch(error => {
+          console.error("Erro ao carregar visitantes:", error);
+          setIsLoading(false);
+        });
+      }
+    } else {
+      navigate('/login');
+    }
+  }, [navigate]);
 
   const [novaEncomenda, setNovaEncomenda] = useState({
     morador: '',
@@ -19,18 +62,15 @@ export function DashboardPorteiro() {
   });
 
   const [novoVisitante, setNovoVisitante] = useState({
-    nome: '',
-    cpf: '',
-    apartamento: '',
-    telefone: '',
-    entrada: new Date().toLocaleTimeString(),
-    saida: null
+    nomeVisitante: '',
+    cpfVisitante: '',
+    numeroTelefone: ''
   });
 
 
   const handleOpenEncomendaModal = () => setShowEncomendaModal(true);
   const handleCloseEncomendaModal = () => setShowEncomendaModal(false);
-  
+
   const handleOpenVisitanteModal = () => setShowVisitanteModal(true);
   const handleCloseVisitanteModal = () => setShowVisitanteModal(false);
 
@@ -60,46 +100,100 @@ export function DashboardPorteiro() {
 
   const handleSubmitVisitante = (e) => {
     e.preventDefault();
-    setVisitantes([...visitantes, { ...novoVisitante, id: Date.now() }]);
-    setNovoVisitante({
-      nome: '',
-      cpf: '',
-      apartamento: '',
-      telefone: '',
-      entrada: new Date().toLocaleTimeString(),
-      saida: null
-    });
-    handleCloseVisitanteModal();
+    cadastrarVisitante(novoVisitante)
+      .then(response => {
+        console.log("Visitante cadastrado:", response.data);
+        listarVisitantes().then((response) => {
+          setVisitantes(response.data);
+        });
+
+        setNovoVisitante({
+          nomeVisitante: '',
+          cpfVisitante: '',
+          numeroTelefone: ''
+        });
+        handleCloseVisitanteModal();
+      })
+      .catch(error => {
+        console.error("Erro ao cadastrar visitante:", error);
+        alert("Erro ao cadastrar visitante: " + (error.response?.data?.message || error.message));
+      });
   };
 
 
-  const handleSaidaVisitante = (id) => {
-    setVisitantes(visitantes.map(visitante => 
-      visitante.id === id 
-        ? { ...visitante, saida: new Date().toLocaleTimeString() } 
-        : visitante
-    ));
+  const handleSaidaVisitante = (idVisitante) => {
+    console.log("Registrando saída para o visitante ID:", idVisitante, "com porteiro ID:", idPorteiro);
+
+    if (!idVisitante) {
+      console.error("ID do visitante é undefined ou null");
+      alert("Erro: ID do visitante não encontrado");
+      return;
+    }
+
+    registrarSaidaVisitante(idVisitante, idPorteiro)
+      .then(response => {
+        console.log("Saída registrada com sucesso:", response.data);
+        return listarVisitantes();
+      })
+      .then(response => {
+        setVisitantes(response.data);
+        alert("Saída registrada com sucesso!");
+      })
+      .catch(error => {
+        console.error("Erro ao registrar saída:", error);
+        alert("Erro ao registrar saída: " + (error.response?.data?.message || error.message));
+      });
   };
+
+
+  const formatarDataHora = (dataString) => {
+    if (!dataString) return '-';
+
+    try {
+      const partes = dataString.split(' ');
+      if (partes.length >= 2) {
+        const horario = partes[1].split(':');
+        return `${horario[0]}:${horario[1]}`;
+      }
+      return dataString;
+    } catch (error) {
+      console.error("Erro ao formatar data:", error);
+      return dataString;
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-700">Carregando...</p>
+        </div>
+      </div>
+    );
+  }
+
+
 
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarPorteiro />
-      
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderPorteiro />
-        
+
         <main className="flex-1 p-6 overflow-auto">
-          
+
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800">
               Bom dia, {porteiro.nome.split(' ')[0]}!
             </h1>
-            
+
           </div>
 
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <button 
+            <button
               onClick={handleOpenEncomendaModal}
               className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all flex items-center gap-4"
             >
@@ -112,7 +206,7 @@ export function DashboardPorteiro() {
               </div>
             </button>
 
-            <button 
+            <button
               onClick={handleOpenVisitanteModal}
               className="bg-white p-6 rounded-xl shadow-md border border-gray-200 hover:shadow-lg transition-all flex items-center gap-4"
             >
@@ -126,13 +220,13 @@ export function DashboardPorteiro() {
             </button>
           </div>
 
-          
+
           <div className="bg-white rounded-xl shadow-md p-6 mb-8">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <Package className="w-5 h-5 text-blue-600" />
               Histórico de Encomendas
             </h2>
-            
+
             {encomendas.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -161,13 +255,13 @@ export function DashboardPorteiro() {
             )}
           </div>
 
-         
+
           <div className="bg-white rounded-xl shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-green-600" />
               Histórico de Visitantes
             </h2>
-            
+
             {visitantes.length > 0 ? (
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -175,35 +269,46 @@ export function DashboardPorteiro() {
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">CPF</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Apartamento</th>
+
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entrada</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Saída</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Ações</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {visitantes.map((visitante, index) => (
-                      <tr key={index}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{visitante.nome}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{visitante.cpf}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{visitante.apartamento}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{visitante.entrada}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {visitante.saida || 'Ainda no condomínio'}
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                          {!visitante.saida && (
-                            <button
-                              onClick={() => handleSaidaVisitante(visitante.id)}
-                              className="text-green-600 hover:text-green-800 flex items-center gap-1"
-                            >
-                              <CheckCircle className="w-4 h-4" />
-                              Registrar saída
-                            </button>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
+                    {visitantes.map((visitante, index) => {
+                      const fluxoEntrada = visitante.fluxos?.find(f => f.tipoFluxo === "ENTRADA");
+
+                      const fluxoSaida = visitante.fluxos?.find(f => f.tipoFluxo === "SAIDA");
+
+                      const saidaRegistrada = visitante.statusVisitante === "INATIVO" || fluxoSaida !== undefined;
+
+                      return (
+                        <tr key={visitante.idVisitante || index}>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{visitante.nomeVisitante}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{visitante.cpfVisitante}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {fluxoEntrada ? fluxoEntrada.dataFluxo : "-"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {fluxoSaida ? fluxoSaida.dataFluxo : "Ainda no condomínio"}
+                          </td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            {!saidaRegistrada ? (
+                              <button
+                                onClick={() => handleSaidaVisitante(visitante.idVisitante)}
+                                className="text-green-600 hover:text-green-800 flex items-center gap-1"
+                              >
+                                <CheckCircle className="w-4 h-4" />
+                                Registrar saída
+                              </button>
+                            ) : (
+                              <span className="text-gray-400">Saída já registrada</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>
@@ -214,12 +319,12 @@ export function DashboardPorteiro() {
         </main>
       </div>
 
-     
+
       {showEncomendaModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Registrar Encomenda</h2>
-            
+
             <form onSubmit={handleSubmitEncomenda}>
               <div className="space-y-4">
                 <div>
@@ -233,7 +338,7 @@ export function DashboardPorteiro() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Apartamento</label>
                   <input
@@ -245,7 +350,7 @@ export function DashboardPorteiro() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Data</label>
                   <input
@@ -257,7 +362,7 @@ export function DashboardPorteiro() {
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
                   <select
@@ -274,7 +379,7 @@ export function DashboardPorteiro() {
                   </select>
                 </div>
               </div>
-              
+
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"
@@ -295,63 +400,51 @@ export function DashboardPorteiro() {
         </div>
       )}
 
-      
+
       {showVisitanteModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 w-full max-w-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Registrar Visitante</h2>
-            
+
             <form onSubmit={handleSubmitVisitante}>
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Nome Completo</label>
                   <input
                     type="text"
-                    name="nome"
-                    value={novoVisitante.nome}
+                    name="nomeVisitante"
+                    value={novoVisitante.nomeVisitante}
                     onChange={handleVisitanteChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     required
                   />
                 </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
                   <input
                     type="text"
-                    name="cpf"
-                    value={novoVisitante.cpf}
+                    name="cpfVisitante"
+                    value={novoVisitante.cpfVisitante}
                     onChange={handleVisitanteChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     required
                   />
                 </div>
-                
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Apartamento Visitado</label>
-                  <input
-                    type="text"
-                    name="apartamento"
-                    value={novoVisitante.apartamento}
-                    onChange={handleVisitanteChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
-                  />
-                </div>
-                
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
                   <input
                     type="tel"
-                    name="telefone"
-                    value={novoVisitante.telefone}
+                    name="numeroTelefone"
+                    value={novoVisitante.numeroTelefone}
                     onChange={handleVisitanteChange}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md"
                     required
                   />
                 </div>
               </div>
-              
+
               <div className="mt-6 flex justify-end gap-3">
                 <button
                   type="button"

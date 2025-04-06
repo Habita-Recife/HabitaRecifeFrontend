@@ -1,5 +1,5 @@
 import axios from "axios";
-
+import { getDados } from '../utils/utils';
 
 const API_URL = 'http://localhost:8080';
 
@@ -77,3 +77,52 @@ export function excluirSindico(idSindico) {
         }
     });
 }
+
+/**
+ * Visitante
+ */
+export function cadastrarVisitante(visitante) {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API_URL}/v1/visitante`, visitante, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function listarVisitantes() {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/visitante`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
+    const token = localStorage.getItem('token');
+    const fluxoDTO = {
+      idPorteiro: idPorteiro,
+      idVisitante: idVisitante,
+      tipoFluxo: "SAIDA",
+      statusFluxo: "INATIVO"
+    };
+    return axios.post(`${API_URL}/v1/fluxo/saida`, fluxoDTO, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  };
+  
+  /**
+ * Porteiro
+ */
+
+  export const obterDadosPorteiroLogado = () => {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/porteiro/logado`, {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    });
+  };
