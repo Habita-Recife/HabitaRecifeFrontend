@@ -1,33 +1,9 @@
-import { useState } from "react";
-import { Edit, Trash2, Eye, Search, User, Mail, Smartphone, Home, Car, Shield, AlertCircle, Plus, Users } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit, Trash2, Eye, Search, User, Mail, Car, Shield, AlertCircle, Users } from "lucide-react";
+import { listarMoradores, editarMorador, excluirMorador } from "../../utils/api";
 
 export default function ListaDeMoradoresSindi() {
-  const [moradores, setMoradores] = useState([
-    {
-      id: 1,
-      nome: "Ana Costa",
-      email: "ana.costa@email.com",
-      telefone: "(11) 99999-9999",
-      cpf: "123.456.789-00",
-      apartamento: "302B",
-      bloco: "Torre A",
-      tipo: "Proprietário",
-      veiculo: "HB20 - ABC1D23",
-      inadimplente: false
-    },
-    {
-      id: 2,
-      nome: "Carlos Mendes",
-      email: "carlos.mendes@email.com",
-      telefone: "(11) 98888-8888",
-      cpf: "987.654.321-00",
-      apartamento: "105A",
-      bloco: "Torre B",
-      tipo: "Locatário",
-      veiculo: "Onix - XYZ4E56",
-      inadimplente: true
-    }
-  ]);
+  const [moradores, setMoradores] = useState([]);
 
   const [searchCpf, setSearchCpf] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -35,55 +11,63 @@ export default function ListaDeMoradoresSindi() {
   const [editingMorador, setEditingMorador] = useState(null);
   
   const [moradorData, setMoradorData] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
-    cpf: "",
-    apartamento: "",
-    bloco: "",
-    tipo: "Proprietário",
-    veiculo: ""
+    nomeMorador: "",
+    emailMorador: "",
+    cpfMorador: "",
+    tipoMorador: "PROPRIETARIO",
+    veiculoMorador: ""
   });
 
+  useEffect(() => {
+    listarMoradores().then((response) => {
+      setMoradores(response.data);
+    });
+  }, []);
+
   const filteredMoradores = moradores.filter(morador =>
-    morador.cpf.includes(searchCpf)
+    morador.cpfMorador.includes(searchCpf)
   );
 
-  const handleDelete = (id) => {
-    setMoradores(moradores.filter(morador => morador.id !== id));
-    setShowDeleteConfirm(null);
+  const handleDelete = (idMorador) => {
+    excluirMorador(idMorador).then((response) => {
+      setMoradores(moradores.filter(morador => morador.idMorador !== idMorador));
+      setShowDeleteConfirm(null);
+    }); 
   };
 
   const handleEdit = (morador) => {
     setEditingMorador(morador);
     setMoradorData({
-      nome: morador.nome,
-      email: morador.email,
-      telefone: morador.telefone,
-      cpf: morador.cpf,
-      apartamento: morador.apartamento,
-      bloco: morador.bloco,
-      tipo: morador.tipo,
-      veiculo: morador.veiculo
+      nomeMorador: morador.nomeMorador,
+      emailMorador: morador.emailMorador,
+      cpfMorador: morador.cpfMorador,
+      tipoMorador: morador.tipoMorador,
+      veiculoMorador: morador.veiculoMorador
     });
   };
 
   const handleSaveEdit = (e) => {
     e.preventDefault();
-    setMoradores(moradores.map(m => 
-      m.id === editingMorador.id ? { ...moradorData, id: editingMorador.id, inadimplente: m.inadimplente } : m
-    ));
-    setEditingMorador(null);
-    setMoradorData({
-      nome: "",
-      email: "",
-      telefone: "",
-      cpf: "",
-      apartamento: "",
-      bloco: "",
-      tipo: "Proprietário",
-      veiculo: ""
+
+    let moradorEditado = {};
+    moradores.forEach((morador) => {
+      if (morador.idMorador === editingMorador.idMorador) {
+        moradorEditado = {...moradorData, idMorador: editingMorador.idMorador};
+      } 
     });
+    editarMorador(editingMorador.idMorador, moradorEditado).then((response) => {
+      setMoradores(moradores.map(m => 
+        m.idMorador === editingMorador.idMorador ? { ...moradorData, idMorador: editingMorador.idMorador, inadimplente: m.inadimplente } : m
+      ));
+      setEditingMorador(null);
+      setMoradorData({
+        nomeMorador: "",
+        emailMorador: "",
+        cpfMorador: "",
+        tipoMorador: "PROPRIETARIO",
+        veiculoMorador: ""
+      });      
+    }); 
   };
 
   return (
@@ -114,7 +98,8 @@ export default function ListaDeMoradoresSindi() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo/Placa</th>
+              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
@@ -122,11 +107,12 @@ export default function ListaDeMoradoresSindi() {
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredMoradores.map((morador) => (
-              <tr key={morador.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nome}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpf}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento} - {morador.bloco}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipo}</td>
+              <tr key={morador.idMorador} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nomeMorador}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpfMorador}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.veiculoMorador || "Não informado"}</td>
+                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento} - {morador.bloco}</td> */}
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Familiar'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${
                     morador.inadimplente ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
@@ -150,7 +136,7 @@ export default function ListaDeMoradoresSindi() {
                     <Edit className="w-4 h-4 inline" />
                   </button>
                   <button 
-                    onClick={() => setShowDeleteConfirm(morador.id)}
+                    onClick={() => setShowDeleteConfirm(morador.idMorador)}
                     className="text-red-600 hover:text-red-800"
                     title="Excluir"
                   >
@@ -208,7 +194,7 @@ export default function ListaDeMoradoresSindi() {
                 <User className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Nome Completo</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.nome}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.nomeMorador}</p>
                 </div>
               </div>
               
@@ -216,15 +202,7 @@ export default function ListaDeMoradoresSindi() {
                 <Mail className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">E-mail</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.email}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <Smartphone className="w-5 h-5 text-[#008080] mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Telefone</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.telefone}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.emailMorador}</p>
                 </div>
               </div>
               
@@ -232,23 +210,23 @@ export default function ListaDeMoradoresSindi() {
                 <Shield className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">CPF</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.cpf}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.cpfMorador}</p>
                 </div>
               </div>
               
-              <div className="flex items-start gap-3">
+              {/* <div className="flex items-start gap-3">
                 <Home className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Apartamento/Bloco</p>
                   <p className="font-medium text-gray-900">{showDetailsModal.apartamento} - {showDetailsModal.bloco}</p>
                 </div>
-              </div>
+              </div> */}
               
               <div className="flex items-start gap-3">
                 <User className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Tipo</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.tipo}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Morador'}</p>
                 </div>
               </div>
               
@@ -256,7 +234,7 @@ export default function ListaDeMoradoresSindi() {
                 <Car className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Veículo</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.veiculo || "Não informado"}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.veiculoMorador || "Não informado"}</p>
                 </div>
               </div>
               
@@ -301,8 +279,8 @@ export default function ListaDeMoradoresSindi() {
                 <label className="block text-gray-700 mb-2">Nome Completo</label>
                 <input
                   type="text"
-                  value={moradorData.nome}
-                  onChange={(e) => setMoradorData({...moradorData, nome: e.target.value})}
+                  value={moradorData.nomeMorador}
+                  onChange={(e) => setMoradorData({...moradorData, nomeMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
@@ -312,78 +290,19 @@ export default function ListaDeMoradoresSindi() {
                 <label className="block text-gray-700 mb-2">E-mail</label>
                 <input
                   type="email"
-                  value={moradorData.email}
-                  onChange={(e) => setMoradorData({...moradorData, email: e.target.value})}
+                  value={moradorData.emailMorador}
+                  onChange={(e) => setMoradorData({...moradorData, emailMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Telefone</label>
-                <input
-                  type="tel"
-                  value={moradorData.telefone}
-                  onChange={(e) => setMoradorData({...moradorData, telefone: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">CPF</label>
-                <input
-                  type="text"
-                  value={moradorData.cpf}
-                  onChange={(e) => setMoradorData({...moradorData, cpf: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                  disabled
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">Apartamento</label>
-                  <input
-                    type="text"
-                    value={moradorData.apartamento}
-                    onChange={(e) => setMoradorData({...moradorData, apartamento: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">Bloco</label>
-                  <input
-                    type="text"
-                    value={moradorData.bloco}
-                    onChange={(e) => setMoradorData({...moradorData, bloco: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Tipo</label>
-                <select
-                  value={moradorData.tipo}
-                  onChange={(e) => setMoradorData({...moradorData, tipo: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                >
-                  <option value="Proprietário">Proprietário</option>
-                  <option value="Locatário">Locatário</option>
-                  <option value="Familiar">Familiar</option>
-                </select>
               </div>
 
               <div className="mb-6">
                 <label className="block text-gray-700 mb-2">Veículo</label>
                 <input
                   type="text"
-                  value={moradorData.veiculo}
-                  onChange={(e) => setMoradorData({...moradorData, veiculo: e.target.value})}
+                  value={moradorData.veiculoMorador}
+                  onChange={(e) => setMoradorData({...moradorData, veiculoMorador: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   placeholder="Modelo e placa do veículo"
                 />

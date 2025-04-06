@@ -1,69 +1,67 @@
-import { useState } from "react";
-import { Edit, Trash2, Eye, Search, User, Mail, Smartphone, Shield, AlertCircle, CheckCircle, Calendar } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Edit, Trash2, Eye, Search, User, Mail, Shield, AlertCircle} from "lucide-react";
+import { listarPorteiros, editarPorteiro, excluirPorteiro } from "../../utils/api";
 
 export default function ListaDePorteirosSindi() {
-  const [porteiros, setPorteiros] = useState([
-    {
-      id: 1,
-      nome: "Carlos Silva",
-      email: "carlos.silva@email.com",
-      telefone: "(11) 99999-9999",
-      cpf: "123.456.789-00",
-      status: "Ativo",
-      dataAdmissao: "15/03/2023"
-    },
-    {
-      id: 2,
-      nome: "Ana Oliveira",
-      email: "ana.oliveira@email.com",
-      telefone: "(11) 98888-8888",
-      cpf: "987.654.321-00",
-      status: "Ativo",
-      dataAdmissao: "10/05/2023"
-    }
-  ]);
-
+  const [porteiros, setPorteiros] = useState([]);
   const [searchCpf, setSearchCpf] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(null);
   const [editingPorteiro, setEditingPorteiro] = useState(null);
   
   const [porteiroData, setPorteiroData] = useState({
-    nome: "",
-    email: "",
-    telefone: "",
-    cpf: "",
-    status: "Ativo",
-    dataAdmissao: ""
+    nomePorteiro: "",
+    emailPorteiro: "",
+    cpfPorteiro: ""
   });
 
+  useEffect(() => {
+    listarPorteiros().then((response) => {
+      setPorteiros(response.data);
+    });
+  }, []);
+
   const filteredPorteiros = porteiros.filter(porteiro =>
-    porteiro.cpf.includes(searchCpf)
+    porteiro.cpfPorteiro.includes(searchCpf)
   );
 
-  const handleDelete = (id) => {
-    setPorteiros(porteiros.filter(porteiro => porteiro.id !== id));
-    setShowDeleteConfirm(null);
+  const handleDelete = (idPorteiro) => {
+    excluirPorteiro(idPorteiro).then((response) => {
+      setPorteiros(porteiros.filter(porteiro => porteiro.idPorteiro !== idPorteiro));
+      setShowDeleteConfirm(null);
+    }); 
   };
 
   const handleEdit = (porteiro) => {
     setEditingPorteiro(porteiro);
     setPorteiroData({
-      nome: porteiro.nome,
-      email: porteiro.email,
-      telefone: porteiro.telefone,
-      cpf: porteiro.cpf,
-      status: porteiro.status,
-      dataAdmissao: porteiro.dataAdmissao
+      nomePorteiro: porteiro.nomePorteiro,
+      emailPorteiro: porteiro.emailPorteiro,
+      cpfPorteiro: porteiro.cpfPorteiro
     });
   };
 
   const handleSaveEdit = (e) => {
     e.preventDefault();
-    setPorteiros(porteiros.map(p => 
-      p.id === editingPorteiro.id ? { ...porteiroData, id: editingPorteiro.id } : p
-    ));
-    setEditingPorteiro(null);
+
+    let porteiroEditado = {};
+    porteiros.forEach((porteiro) => {
+      if (porteiro.idPorteiro === editingPorteiro.idPorteiro) {
+        porteiroEditado = {...porteiroData, idPorteiro: editingPorteiro.idPorteiro};
+      } 
+    });
+
+    editarPorteiro(editingPorteiro.idPorteiro, porteiroEditado).then((response) => {
+      setPorteiros(porteiros.map(p => 
+        p.idPorteiro === editingPorteiro.idPorteiro ? { ...porteiroData, idPorteiro: editingPorteiro.idPorteiro } : p
+      ));
+      setEditingPorteiro(null);
+      setPorteiroData({
+        nomePorteiro: "",
+        emailPorteiro: "",
+        cpfPorteiro: ""
+      });      
+    }); 
   };
 
   return (
@@ -94,26 +92,16 @@ export default function ListaDePorteirosSindi() {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Telefone</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admissão</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">E-mail</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {filteredPorteiros.map((porteiro) => (
-              <tr key={porteiro.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{porteiro.nome}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{porteiro.cpf}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{porteiro.telefone}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    porteiro.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {porteiro.status}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{porteiro.dataAdmissao}</td>
+              <tr key={porteiro.idPorteiro} className="hover:bg-gray-50">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{porteiro.nomePorteiro}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{porteiro.cpfPorteiro}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{porteiro.emailPorteiro}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button 
                     onClick={() => setShowDetailsModal(porteiro)}
@@ -130,7 +118,7 @@ export default function ListaDePorteirosSindi() {
                     <Edit className="w-4 h-4 inline" />
                   </button>
                   <button 
-                    onClick={() => setShowDeleteConfirm(porteiro.id)}
+                    onClick={() => setShowDeleteConfirm(porteiro.idPorteiro)}
                     className="text-red-600 hover:text-red-800"
                     title="Excluir"
                   >
@@ -188,7 +176,7 @@ export default function ListaDePorteirosSindi() {
                 <User className="w-5 h-5 text-[#2C3E50] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Nome Completo</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.nome}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.nomePorteiro}</p>
                 </div>
               </div>
               
@@ -196,15 +184,7 @@ export default function ListaDePorteirosSindi() {
                 <Mail className="w-5 h-5 text-[#2C3E50] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">E-mail</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.email}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <Smartphone className="w-5 h-5 text-[#2C3E50] mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Telefone</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.telefone}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.emailPorteiro}</p>
                 </div>
               </div>
               
@@ -212,27 +192,7 @@ export default function ListaDePorteirosSindi() {
                 <Shield className="w-5 h-5 text-[#2C3E50] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">CPF</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.cpf}</p>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <CheckCircle className="w-5 h-5 text-[#2C3E50] mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Status</p>
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    showDetailsModal.status === 'Ativo' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}>
-                    {showDetailsModal.status}
-                  </span>
-                </div>
-              </div>
-              
-              <div className="flex items-start gap-3">
-                <Calendar className="w-5 h-5 text-[#2C3E50] mt-0.5" />
-                <div>
-                  <p className="text-sm text-gray-500">Data de Admissão</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.dataAdmissao}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.cpfPorteiro}</p>
                 </div>
               </div>
             </div>
@@ -265,8 +225,8 @@ export default function ListaDePorteirosSindi() {
                 <label className="block text-gray-700 mb-2">Nome Completo</label>
                 <input
                   type="text"
-                  value={porteiroData.nome}
-                  onChange={(e) => setPorteiroData({...porteiroData, nome: e.target.value})}
+                  value={porteiroData.nomePorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, nomePorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                   required
                 />
@@ -276,19 +236,8 @@ export default function ListaDePorteirosSindi() {
                 <label className="block text-gray-700 mb-2">E-mail</label>
                 <input
                   type="email"
-                  value={porteiroData.email}
-                  onChange={(e) => setPorteiroData({...porteiroData, email: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Telefone</label>
-                <input
-                  type="tel"
-                  value={porteiroData.telefone}
-                  onChange={(e) => setPorteiroData({...porteiroData, telefone: e.target.value})}
+                  value={porteiroData.emailPorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, emailPorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                   required
                 />
@@ -298,34 +247,11 @@ export default function ListaDePorteirosSindi() {
                 <label className="block text-gray-700 mb-2">CPF</label>
                 <input
                   type="text"
-                  value={porteiroData.cpf}
-                  onChange={(e) => setPorteiroData({...porteiroData, cpf: e.target.value})}
+                  value={porteiroData.cpfPorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, cpfPorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                   required
                   disabled
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Status</label>
-                <select
-                  value={porteiroData.status}
-                  onChange={(e) => setPorteiroData({...porteiroData, status: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                >
-                  <option value="Ativo">Ativo</option>
-                  <option value="Inativo">Inativo</option>
-                </select>
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-gray-700 mb-2">Data de Admissão</label>
-                <input
-                  type="text"
-                  value={porteiroData.dataAdmissao}
-                  onChange={(e) => setPorteiroData({...porteiroData, dataAdmissao: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                  required
                 />
               </div>
 

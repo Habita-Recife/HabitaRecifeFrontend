@@ -166,14 +166,53 @@ export function excluirMorador(idMorador) {
     });
 }
 
-   /**
+/**
  * Usuario
  */
 
-   export function cadastrarUsuario(userData) {
+export function cadastrarUsuario(userData) {
     return axios.post(`${API_URL}/v1/users/register`, userData);
 }
 
 export function forgotPassword(email) {
     return axios.post(`${API_URL}/v1/users/forgot-password?email=${email}`);
+}
+
+/**
+ * Porteiro
+ */
+export function cadastrarPorteiro(porteiro) {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API_URL}/v1/porteiro`, porteiro, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function listarPorteiros() {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/porteiro`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function editarPorteiro(idPorteiro, porteiro) {
+    const token = localStorage.getItem('token');
+    return axios.put(`${API_URL}/v1/porteiro/${idPorteiro}`, porteiro, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function excluirPorteiro(idPorteiro) {
+    const token = localStorage.getItem('token');
+    return axios.delete(`${API_URL}/v1/porteiro/${idPorteiro}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
 }
