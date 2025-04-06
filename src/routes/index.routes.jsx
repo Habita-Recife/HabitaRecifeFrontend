@@ -15,6 +15,7 @@ import { ServiSindico } from '../pages/ServiSindico'
 import { FinanceiroSindi } from '../pages/FinanceiroSindi'
 import { DashboardPorteiro } from '../pages/DashboardPorteiro'
 import { DashboardPrefeitura } from '../pages/DashboardPrefeitura'
+import { RecuperarSenha } from '../pages/RecuperarSenha'
 export const router = createBrowserRouter([
     {
         path: "/",
@@ -79,5 +80,9 @@ export const router = createBrowserRouter([
     {
         path: "/DashboardPrefeitura",
         element: <DashboardPrefeitura/>
+    },
+    {
+        path: "RecuperarSenha",
+        element: <RecuperarSenha/>
     }
 ]) 
