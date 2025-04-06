@@ -4,18 +4,21 @@ import { X } from "lucide-react";
 import ModalCadSucess from "../ModalCadSucess";
 import InputComponent from "../InputComponent";
 import ButtonComponent from "../ButtonComponent";
+import { cadastrarUsuario } from "../../utils/api";
+
 
 const ModalCadastro = ({ isOpen, onClose }) => {
   const [openModal, setOpenModal] = useState(false);
   const [formData, setFormData] = useState({
-    nome: "",
+    username: "",
     email: "",
-    senha: "",
-    confirmarSenha: "",
-    tipoUsuario: "morador"
+    password: "",
+    confirmPassword: "",
+    role: "MORADOR"
   });
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [senhaInvalida, setSenhaInvalida] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,6 +26,14 @@ const ModalCadastro = ({ isOpen, onClose }) => {
       ...prev,
       [name]: value
     }));
+
+    if (name === "password") {
+      const senhaValida = value &&
+        value.length >= 8 &&
+        value.match(/[A-Za-z]/) &&
+        value.match(/[0-9]/);
+      setSenhaInvalida(value !== "" && !senhaValida);
+    }
   };
 
   const handleSubmit = async (event) => {
@@ -30,17 +41,13 @@ const ModalCadastro = ({ isOpen, onClose }) => {
     setIsLoading(true);
 
     let errors = [];
-    
-    if (!formData.nome || !formData.email || !formData.senha || !formData.confirmarSenha) {
+
+    if (!formData.username || !formData.email || !formData.password || !formData.confirmPassword) {
       errors.push("Todos os campos são obrigatórios.");
     }
 
-    if (formData.senha !== formData.confirmarSenha) {
+    if (formData.password !== formData.confirmPassword) {
       errors.push("As senhas não coincidem.");
-    }
-
-    if (formData.senha.length < 6) {
-      errors.push("A senha deve ter pelo menos 6 caracteres.");
     }
 
     if (!formData.email.includes("@")) {
@@ -50,17 +57,38 @@ const ModalCadastro = ({ isOpen, onClose }) => {
     if (errors.length > 0) {
       setError(errors.join(" "));
       setIsLoading(false);
-      return;  
+      return;
     }
 
     try {
-      // nessa parte entraria a api, que ainda nao faco ideia de como receber os dados
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const userData = {
+        username: formData.username,
+        email: formData.email,
+        password: formData.password,
+        roles: [formData.role]
+      };
+
+      await cadastrarUsuario(userData);
+
       setError("");
       setOpenModal(true);
     } catch (error) {
       console.error("Erro no cadastro:", error);
-      setError("Ocorreu um erro durante o cadastro.");
+
+      if (error.response) {
+        if (error.response.status === 404 ||
+          error.response.status === 400 ||
+          error.response.data?.message?.toLowerCase().includes("email") ||
+          error.response.data?.message?.toLowerCase().includes("não encontrado") ||
+          error.response.data?.message?.toLowerCase().includes("não cadastrado")) {
+
+          setError("Email não pré-cadastrado no sistema. Por favor, entre em contato com o síndico do seu condomínio.");
+        } else {
+          setError(error.response.data?.message || "Ocorreu um erro durante o cadastro.");
+        }
+      } else {
+        setError("Ocorreu um erro durante o cadastro. Verifique sua conexão e tente novamente.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -70,11 +98,11 @@ const ModalCadastro = ({ isOpen, onClose }) => {
     setOpenModal(false);
     onClose();
     setFormData({
-      nome: "",
+      username: "",
       email: "",
-      senha: "",
-      confirmarSenha: "",
-      tipoUsuario: "morador"
+      password: "",
+      confirmPassword: "",
+      role: "MORADOR"
     });
   };
 
@@ -92,30 +120,27 @@ const ModalCadastro = ({ isOpen, onClose }) => {
           </button>
 
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">Cadastro</h2>
+            <h2 className="text-2xl font-bold text-white mb-2">Registre-se</h2>
             <p className="text-gray-300 text-sm">
               Preencha os campos abaixo para <span className="text-[#95dfdf]">ativar sua conta</span>
-
             </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Nome Completo:
+                Apelido:
               </label>
               <InputComponent
                 typeInput="text"
-                name="nome"
-                placeholderText="Digite seu nome"
-                value={formData.nome}
+                name="username"
+                placeholderText=" Digite um apelido"
+                value={formData.username}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Email:
@@ -123,59 +148,70 @@ const ModalCadastro = ({ isOpen, onClose }) => {
               <InputComponent
                 typeInput="email"
                 name="email"
-                placeholderText="Digite seu e-mail"
+                placeholderText=" Digite o email fornecido para cadastro"
                 value={formData.email}
                 onChange={handleChange}
                 required
               />
             </div>
 
-            
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Senha:
               </label>
-              <InputComponent
-                typeInput="password"
-                name="senha"
-                placeholderText="Crie sua senha"
-                value={formData.senha}
-                onChange={handleChange}
-                required
-                showEyeIcon={true}
-              />
+              <div className="relative">
+                <InputComponent
+                  typeInput="password"
+                  name="password"
+                  placeholderText=" Crie sua senha"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  showEyeIcon={true}
+                />
+                {senhaInvalida && (
+                  <div className="mt-1">
+                    <div className="flex items-center bg-white p-2 rounded shadow border border-gray-300">
+                      <div className="flex-shrink-0 w-5 h-5 bg-orange-500 rounded-sm flex items-center justify-center mr-2">
+                        <span className="text-white text-xs font-bold">!</span>
+                      </div>
+                      <p className="text-xs text-black">
+                        A senha deve possuir pelo menos 8 caracteres, incluir letras e números.
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
-            
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Confirmar Senha:
               </label>
               <InputComponent
                 typeInput="password"
-                name="confirmarSenha"
-                placeholderText="Repita sua senha"
-                value={formData.confirmarSenha}
+                name="confirmPassword"
+                placeholderText=" Repita sua senha"
+                value={formData.confirmPassword}
                 onChange={handleChange}
                 required
                 showEyeIcon={true}
               />
             </div>
 
-            
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Tipo de Usuário:
               </label>
               <select
-                name="tipoUsuario"
-                value={formData.tipoUsuario}
+                name="role"
+                value={formData.role}
                 onChange={handleChange}
                 className="w-full bg-[#3E4E5F] border border-[#4E5D6C] text-white text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
               >
-                <option value="morador">Morador</option>
-                
-                <option value="porteiro">Porteiro</option>
+                <option value="MORADOR">Morador</option>
+                <option value="PORTEIRO">Porteiro</option>
+                <option value="SINDICO">Síndico</option>
               </select>
             </div>
 
@@ -189,7 +225,6 @@ const ModalCadastro = ({ isOpen, onClose }) => {
               <ButtonComponent
                 text={isLoading ? "Cadastrando..." : "Cadastrar"}
                 type="submit"
-                
                 disabled={isLoading}
               />
               <button
@@ -203,10 +238,10 @@ const ModalCadastro = ({ isOpen, onClose }) => {
           </form>
         </div>
       </div>
-      
-      <ModalCadSucess 
-        isOpen={openModal} 
-        onClose={handleCloseSuccessModal} 
+
+      <ModalCadSucess
+        isOpen={openModal}
+        onClose={handleCloseSuccessModal}
       />
     </>
   );

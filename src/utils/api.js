@@ -126,3 +126,12 @@ export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
       }
     });
   };
+
+   /**
+ * Usuario
+ */
+
+   export function cadastrarUsuario(userData) {
+    return axios.post(`${API_URL}/v1/users/register`, userData);
+}
+
