@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Bell, MessageCircle, Calendar, ChevronDown, LogOut, User, Settings, HelpCircle } from "lucide-react";
+import { LogOut, Lock, ChevronDown } from "lucide-react";
 
 const HeaderMorador = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -29,32 +29,12 @@ const HeaderMorador = () => {
     navigate("/login"); 
   };
 
+  const handleChangePassword = () => {
+    navigate("/RecuperarSenha");
+  };
+
   return (
-    <div className="w-full h-20 bg-[#2C3E50] flex items-center justify-between px-8 shadow-lg relative">
-      <div className="flex items-center gap-10">
-        <button className="flex items-center gap-2 text-white hover:text-[#008080] transition-colors duration-300 group">
-          <div className="p-2 bg-[#008080] rounded-full group-hover:bg-white transition-colors duration-300">
-            <Bell size={18} className="group-hover:text-[#008080]" />
-          </div>
-          <span className="font-medium">Notificações</span>
-          <ChevronDown size={16} className="opacity-70" />
-        </button>
-
-        <button className="flex items-center gap-2 text-white hover:text-[#008080] transition-colors duration-300 group">
-          <div className="p-2 bg-[#008080] rounded-full group-hover:bg-white transition-colors duration-300">
-            <MessageCircle size={18} className="group-hover:text-[#008080]" />
-          </div>
-          <span className="font-medium">Comunicações</span>
-        </button>
-
-        <button className="flex items-center gap-2 text-white hover:text-[#008080] transition-colors duration-300 group">
-          <div className="p-2 bg-[#008080] rounded-full group-hover:bg-white transition-colors duration-300">
-            <Calendar size={18} className="group-hover:text-[#008080]" />
-          </div>
-          <span className="font-medium">Reuniões</span>
-        </button>
-      </div>
-
+    <div className="w-full h-20 bg-[#2C3E50] flex items-center justify-end px-8 shadow-lg relative">
       <div 
         className="flex items-center gap-4 cursor-pointer group relative"
         onClick={toggleDropdown}
@@ -89,10 +69,13 @@ const HeaderMorador = () => {
             </div>
 
             <div className="py-1">
-              <a href="#" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-                <User size={16} className="mr-3 text-gray-500" />
-                Meu Perfil
-              </a>
+              <button 
+                onClick={handleChangePassword}
+                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+              >
+                <Lock size={16} className="mr-3 text-gray-500" />
+                Alterar Senha
+              </button>
             </div>
 
             <div className="border-t border-gray-200">

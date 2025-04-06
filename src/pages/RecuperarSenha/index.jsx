@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { X, Lock, CheckCircle } from "lucide-react";
+import { X, Lock, CheckCircle, ArrowLeft } from "lucide-react";
 import InputComponent from "../../components/InputComponent";
 import ButtonComponent from "../../components/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
 const checkmarkStyle = `
 @keyframes draw {
@@ -55,6 +56,7 @@ export function RecuperarSenha() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -68,7 +70,7 @@ export function RecuperarSenha() {
     e.preventDefault();
     setIsLoading(true);
 
-    // as validacoes basicas aki
+    // Validações básicas
     if (!formData.novaSenha || !formData.confirmarSenha) {
       setError("Preencha todos os campos");
       setIsLoading(false);
@@ -87,7 +89,7 @@ export function RecuperarSenha() {
       return;
     }
 
-    // eh como se simulasse uma request kkk
+    // Simulação de request kkk
     setTimeout(() => {
       setError("");
       setShowSuccessModal(true);
@@ -95,18 +97,33 @@ export function RecuperarSenha() {
     }, 1000);
   };
 
+  const handleBackToLogin = () => {
+    navigate("/login");
+  };
+
   return (
     <div className="min-h-screen bg-[#2C3E50] flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="bg-[#3E4E5F] rounded-lg shadow-xl overflow-hidden">
           <div className="p-8">
+            <button 
+              onClick={handleBackToLogin}
+              className="flex items-center text-gray-300 hover:text-white mb-4"
+            >
+              <ArrowLeft className="h-5 w-5 mr-1" />
+              Voltar para login
+            </button>
+
             <div className="text-center mb-8">
               <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-[#4E5D6C] mb-4">
                 <Lock className="h-5 w-5 text-white" />
               </div>
               <h2 className="text-2xl font-bold text-white mb-2">Redefinir Senha</h2>
-              <p className="text-gray-300">
+              <p className="text-gray-300 mb-2">
                 Crie uma nova senha para sua conta
+              </p>
+              <p className="text-red-500 shadow-sm animate-pulse">
+                Se você estiver logado, será desconectado e redirecionado para a página de login.
               </p>
             </div>
             
@@ -161,7 +178,7 @@ export function RecuperarSenha() {
         </div>
       </div>
 
-      {/* coloquei o modal aqui mesmo sem componentizar */}
+      {/* Adicione o modal aqui com uma funcao pra voltar ao login caso tenha sucesso */}
       {showSuccessModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <style>{checkmarkStyle}</style>
@@ -174,15 +191,16 @@ export function RecuperarSenha() {
               </svg>
               
               <h2 className="text-2xl font-bold text-white mb-2">Senha Redefinida!</h2>
-              <p className="text-gray-300 text-sm mb-6">
+              <p className="text-green-500 shadow-sm animate-pulse text-sm mb-6">
                 Sua senha foi alterada com sucesso. Agora você pode fazer login com sua nova senha.
               </p>
             </div>
 
             <div className="flex justify-center">
               <ButtonComponent
-                text="OK"
-                onClick={() => setShowSuccessModal(false)}
+                text="Voltar para Login"
+                onClick={handleBackToLogin}
+                className="w-full"
               />
             </div>
           </div>
