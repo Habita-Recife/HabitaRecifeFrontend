@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarSindi from "../../components/SideBarSindi";
 import HeaderSindi from "../../components/HeaderSindi";
-import { Bell, Calendar, FileText, Wallet, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Plus, ChevronRight, Clock, MapPin, Building2, Home, Car, Shield, PartyPopper, Baby, Bike } from "lucide-react";
+import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, ChevronRight, Clock, MapPin, Building2, Home, Car, Shield, PartyPopper, Baby, Bike } from "lucide-react";
 import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
 import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
-import { cadastrarMorador } from "../../utils/api";
-import { listarCondominios } from "../../utils/api";
+import { cadastrarMorador, cadastrarPorteiro, listarCondominios } from "../../utils/api";
 import { getDados } from "../../utils/utils";
 
 export function DashboardSindi() {
@@ -46,9 +45,10 @@ export function DashboardSindi() {
   });
 
   const [porteiroData, setPorteiroData] = useState({
-    nome: "",
-    email: "",
-    cpf: ""
+    nomePorteiro: "",
+    emailPorteiro: "",
+    cpfPorteiro: "",
+    idCondominio: ""
   });
 
   useEffect(() => {
@@ -63,6 +63,11 @@ export function DashboardSindi() {
         setMoradorData((prev) => ({
           ...prev,
           id_condominio: condominio.idCondominio
+        }));
+
+        setPorteiroData((prev) => ({
+          ...prev,
+          idCondominio: condominio.idCondominio
         }));
       }
     });
@@ -167,7 +172,6 @@ export function DashboardSindi() {
     e.preventDefault();
     
     cadastrarMorador(moradorData).then((response) => {
-      console.log(response);
       setShowCadastrarMoradorModal(false);
       setShowSuccessMoradorModal(true);
       setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "" });
@@ -177,10 +181,12 @@ export function DashboardSindi() {
 
   const handlePorteiroSubmit = (e) => {
     e.preventDefault();
-    console.log("Porteiro cadastrado:", porteiroData);
-    setShowCadastrarPorteiroModal(false);
-    setShowSuccessPorteiroModal(true);
-    setPorteiroData({ nome: "", email: "", cpf: "" });
+
+    cadastrarPorteiro(porteiroData).then((response) => {
+      setShowCadastrarPorteiroModal(false);
+      setShowSuccessPorteiroModal(true);
+      setPorteiroData({...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
+    });
   };
 
   return (
@@ -338,25 +344,9 @@ export function DashboardSindi() {
               </div>
             </div>
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-[#008080]" />
-                    Lista de Moradores
-                  </h2>
-                </div>
-                <ListaDeMoradoresSindi />
-            </div>
+            <ListaDeMoradoresSindi />
 
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <Users className="w-5 h-5 text-[#2C3E50]" />
-                  Lista de Porteiros
-                </h2>
-              </div>
-              <ListaDePorteirosSindi />
-            </div>
+            <ListaDePorteirosSindi />
 
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex items-center justify-between mb-6">
@@ -754,8 +744,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">Nome Completo</label>
                 <input
                   type="text"
-                  value={porteiroData.nome}
-                  onChange={(e) => setPorteiroData({...porteiroData, nome: e.target.value})}
+                  value={porteiroData.nomePorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, nomePorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
@@ -765,8 +755,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">E-mail</label>
                 <input
                   type="email"
-                  value={porteiroData.email}
-                  onChange={(e) => setPorteiroData({...porteiroData, email: e.target.value})}
+                  value={porteiroData.emailPorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, emailPorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
@@ -776,8 +766,8 @@ export function DashboardSindi() {
                 <label className="block text-gray-700 mb-2">CPF</label>
                 <input
                   type="text"
-                  value={porteiroData.cpf}
-                  onChange={(e) => setPorteiroData({...porteiroData, cpf: e.target.value})}
+                  value={porteiroData.cpfPorteiro}
+                  onChange={(e) => setPorteiroData({...porteiroData, cpfPorteiro: e.target.value})}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
                   required
                 />
