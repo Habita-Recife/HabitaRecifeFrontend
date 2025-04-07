@@ -8,11 +8,6 @@ const SidebarMorador = () => {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    console.log("Usuário deslogado");
-    navigate("/login");
-  };
-
   const handleButtonClick = (text) => {
     switch(text) {
       case "Início":
@@ -33,10 +28,14 @@ const SidebarMorador = () => {
   };
 
   return (
-    <div className="w-64 h-screen bg-[#2C3E50] shadow-md flex flex-col justify-between p-4">
-      <div className="flex flex-col items-center gap-4">
-        <img src={logo} alt="Logo" className="w-40 h-32" />
-        <h1 className="text-lg font-bold text-white">HABITA RECIFE</h1>
+    <div className="w-64 h-screen bg-[#2C3E50] shadow-md flex flex-col  p-4">
+      <div className="flex flex-col items-center gap-4 mt-5">
+        <img 
+          src={logo} 
+          alt="Logo" 
+          className="w-40 h-32 cursor-pointer" 
+          onClick={() => navegar("/DashboardMorador")} 
+        />
 
         <div className="relative w-full">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
@@ -51,22 +50,11 @@ const SidebarMorador = () => {
         </div>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 mt-5">
         <SidebarButton icon={<Home size={18} />} text="Início" onClick={() => handleButtonClick("Início")} />
         <SidebarButton icon={<FileText size={18} />} text="Solicitações" onClick={() => handleButtonClick("Solicitações")} />
         <SidebarButton icon={<Wallet size={18} />} text="Controle Financeiro" onClick={() => handleButtonClick("Controle Financeiro")} />
         <SidebarButton icon={<Headphones size={18} />} text="Serviços" onClick={() => handleButtonClick("Serviços")} />
-      </div>
-
-      <div className="mb-4">
-        <button
-          className="flex items-center justify-start gap-3 p-3 rounded-lg text-white hover:bg-[#34495E] w-full transition-colors"
-          onClick={handleLogout}
-          aria-label="Sair"
-        >
-          <LogOut size={20} className="text-gray-300" />
-          <span className="text-gray-300 hover:text-white">Sair</span>
-        </button>
       </div>
     </div>
   );

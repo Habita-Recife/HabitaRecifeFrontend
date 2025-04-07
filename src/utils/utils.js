@@ -10,4 +10,23 @@ export function getDados(token) {
     );
   
     return JSON.parse(jsonPayload);
+}
+
+export function converterRoles(role) {
+  switch(role) {
+    case 'ROLE_PORTEIRO':
+      return 'Porteiro';
+      break;
+    case 'ROLE_SINDICO':
+      return 'Sindico';
+      break;
+    case 'ROLE_MORADOR':
+      return 'Morador';
+      break;
+    case 'ROLE_PREFEITURA':
+      return 'Prefeitura';
+      break;
+    default:
+      return 'Outros';
   }
+}

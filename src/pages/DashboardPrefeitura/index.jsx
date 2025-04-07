@@ -4,6 +4,8 @@ import HeaderPrefeitura from "../../components/HeaderPrefeitura";
 import { Building, Users, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cadastrarCondominio, listarCondominios, editarCondominio, excluirCondominio, cadastrarSindico, listarSindicos, editarSindico, excluirSindico } from "../../utils/api";
 import { getDados } from "../../utils/utils";
+import InputRG from "../../components/InputRG";
+import InputTelefone from "../../components/InputTelefone";
 
 export function DashboardPrefeitura() {
   const navigate = useNavigate();
@@ -184,9 +186,9 @@ export function DashboardPrefeitura() {
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#2C3E50] via-[#1a2633] to-[#0d131a] bg-clip-text text-transparent">
-                      Dashboard Prefeitura
-                    </h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+                    Dashboard
+                  </h1>
                     <span className="text-sm text-white bg-gradient-to-r from-[#2C3E50] to-[#1a2633] px-4 py-1.5 rounded-full shadow-md">
                       Painel Administrativo
                     </span>
@@ -505,24 +507,18 @@ export function DashboardPrefeitura() {
 
               <div className="mb-4">
                 <label className="block text-gray-700 mb-2">Telefone</label>
-                <input
-                  type="tel"
+                <InputTelefone
                   value={sindicoData.telefoneSindico}
-                  onChange={(e) => setSindicoData({...sindicoData, telefoneSindico: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                  required
+                  onChange={(val) => setSindicoData({ ...sindicoData, telefoneSindico: val })}
                 />
               </div>
 
               {editingSindico === null && (
                 <div className="mb-6">
                   <label className="block text-gray-700 mb-2">RG</label>
-                  <input
-                    type="text"
+                  <InputRG
                     value={sindicoData.rgSindico}
-                    onChange={(e) => setSindicoData({...sindicoData, rgSindico: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
-                    required
+                    onChange={(val) => setSindicoData({ ...sindicoData, rgSindico: val })}
                   />
                 </div>
               )}

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Edit, Trash2, Eye, Search, User, Mail, Car, Shield, AlertCircle, Users } from "lucide-react";
 import { listarMoradores, editarMorador, excluirMorador } from "../../utils/api";
 
-export default function ListaDeMoradoresSindi() {
+export default function ListaDeMoradoresSindi(props) {
   const [moradores, setMoradores] = useState([]);
 
   const [searchCpf, setSearchCpf] = useState("");
@@ -19,10 +19,20 @@ export default function ListaDeMoradoresSindi() {
   });
 
   useEffect(() => {
-    listarMoradores().then((response) => {
-      setMoradores(response.data);
-    });
-  }, []);
+    const fetchMoradores = async () => {
+      try {
+        const response = await listarMoradores();
+        setMoradores(response.data);
+        if (props.onChangeMoradores) {
+          props.onChangeMoradores(response.data); 
+        }
+      } catch (error) {
+        console.error("Erro ao buscar moradores:", error);
+      }
+    };
+      
+    fetchMoradores();
+  }, [props.atualizar]);
 
   const filteredMoradores = moradores.filter(morador =>
     morador.cpfMorador.includes(searchCpf)
@@ -33,6 +43,10 @@ export default function ListaDeMoradoresSindi() {
       setMoradores(moradores.filter(morador => morador.idMorador !== idMorador));
       setShowDeleteConfirm(null);
     }); 
+
+    const novaLista = moradores.filter(morador => morador.idMorador !== idMorador);
+    setMoradores(novaLista);
+    if (props.onChangeMoradores) props.onChangeMoradores(novaLista);
   };
 
   const handleEdit = (morador) => {
@@ -67,6 +81,14 @@ export default function ListaDeMoradoresSindi() {
         tipoMorador: "PROPRIETARIO",
         veiculoMorador: ""
       });      
+
+      const listaAtualizada = moradores.map(m => 
+        m.idMorador === editingMorador.idMorador
+          ? { ...moradorData, idMorador: editingMorador.idMorador, inadimplente: m.inadimplente }
+          : m
+      );
+      setMoradores(listaAtualizada);
+      if (props.onChangeMoradores) props.onChangeMoradores(listaAtualizada);
     }); 
   };
 
@@ -99,7 +121,6 @@ export default function ListaDeMoradoresSindi() {
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo/Placa</th>
-              {/* <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th> */}
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
@@ -111,7 +132,6 @@ export default function ListaDeMoradoresSindi() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nomeMorador}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpfMorador}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.veiculoMorador || "Não informado"}</td>
-                {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento} - {morador.bloco}</td> */}
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Familiar'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <span className={`px-2 py-1 text-xs font-medium rounded-full ${
@@ -123,7 +143,7 @@ export default function ListaDeMoradoresSindi() {
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                   <button 
                     onClick={() => setShowDetailsModal(morador)}
-                    className="text-[#008080] hover:text-[#006666] mr-3"
+                    className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
                     title="Ver detalhes"
                   >
                     <Eye className="w-4 h-4 inline" />

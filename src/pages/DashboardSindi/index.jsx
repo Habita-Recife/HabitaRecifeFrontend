@@ -2,12 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import SidebarSindi from "../../components/SideBarSindi";
 import HeaderSindi from "../../components/HeaderSindi";
-import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, ChevronRight, Clock, MapPin, Building2, Home, Car, Shield, PartyPopper, Baby, Bike } from "lucide-react";
+import InputCpf from "../../components/InputCpf";
+import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Clock, Eye, Edit } from "lucide-react";
 import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
 import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
-import { cadastrarMorador, cadastrarPorteiro, listarCondominios } from "../../utils/api";
+import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes } from "../../utils/api";
 import { getDados } from "../../utils/utils";
 
 export function DashboardSindi() {
@@ -20,6 +21,10 @@ export function DashboardSindi() {
   const [showCadastrarPorteiroModal, setShowCadastrarPorteiroModal] = useState(false);
   const [showSuccessMoradorModal, setShowSuccessMoradorModal] = useState(false);
   const [showSuccessPorteiroModal, setShowSuccessPorteiroModal] = useState(false);
+  const [atualizarListaPorteiros, setAtualizarListaPorteiros] = useState(false);
+  const [atualizarListaMoradores, setAtualizarListaMoradores] = useState(false);
+  const [solicitacoes, setSolicitacoes] = useState([]);
+  const [moradores, setMoradores] = useState([]);
   
   const [avisoData, setAvisoData] = useState({
     titulo: "",
@@ -72,6 +77,10 @@ export function DashboardSindi() {
       }
     });
 
+    listarSolicitacoes().then((response) => {
+      setSolicitacoes(response.data);
+    });
+
     const timer = setInterval(() => {
       setCurrentDateTime(new Date());
     }, 60000);
@@ -94,35 +103,6 @@ export function DashboardSindi() {
     });
   };
 
-  const solicitacoes = [
-    {
-      id: 1,
-      morador: "Ana Costa",
-      apartamento: "302B",
-      tipo: "Manutenção",
-      descricao: "Vazamento no banheiro",
-      data: "15/03/2025",
-      status: "pendente"
-    },
-    {
-      id: 2,
-      morador: "Carlos Mendes",
-      apartamento: "105A",
-      tipo: "Sugestão",
-      descricao: "Instalar bicicletário coberto",
-      data: "10/03/2025",
-      status: "em_andamento"
-    },
-    {
-      id: 3,
-      morador: "Roberto Alves",
-      apartamento: "403C",
-      tipo: "Reclamação",
-      descricao: "Barulho excessivo após 22h",
-      data: "05/03/2025",
-      status: "resolvido"
-    }
-  ];
 
   const pagamentos = {
     emDia: 85,
@@ -134,18 +114,6 @@ export function DashboardSindi() {
     { nome: "João Silva", apartamento: "201A", meses: 2, valor: 1000 },
     { nome: "Maria Oliveira", apartamento: "305B", meses: 1, valor: 500 },
     { nome: "Pedro Santos", apartamento: "102C", meses: 3, valor: 1500 }
-  ];
-
-  const condominiumInfo = [
-    { icon: <MapPin className="w-5 h-5 text-[#008080]" />, text: "Bairro nobre e de fácil acesso na cidade" },
-    { icon: <Building2 className="w-5 h-5 text-[#008080]" />, text: "5 blocos residenciais" },
-    { icon: <Home className="w-5 h-5 text-[#008080]" />, text: "200 unidades" },
-    { icon: <Users className="w-5 h-5 text-[#008080]" />, text: "500 moradores" },
-    { icon: <Car className="w-5 h-5 text-[#008080]" />, text: "1 vaga por unidade + visitantes" },
-    { icon: <Shield className="w-5 h-5 text-[#008080]" />, text: "Portaria 24h, câmeras e controle digital" },
-    { icon: <PartyPopper className="w-5 h-5 text-[#008080]" />, text: "Salão de festas e espaço gourmet" },
-    { icon: <Baby className="w-5 h-5 text-[#008080]" />, text: "Playground e área verde" },
-    { icon: <Bike className="w-5 h-5 text-[#008080]" />, text: "Bicicletário e coworking" }
   ];
 
   const handleAvisoSubmit = (e) => {
@@ -172,6 +140,7 @@ export function DashboardSindi() {
     e.preventDefault();
     
     cadastrarMorador(moradorData).then((response) => {
+      setAtualizarListaMoradores((atualiza) => !atualiza);
       setShowCadastrarMoradorModal(false);
       setShowSuccessMoradorModal(true);
       setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "" });
@@ -183,6 +152,7 @@ export function DashboardSindi() {
     e.preventDefault();
 
     cadastrarPorteiro(porteiroData).then((response) => {
+      setAtualizarListaPorteiros((atualiza) => !atualiza);
       setShowCadastrarPorteiroModal(false);
       setShowSuccessPorteiroModal(true);
       setPorteiroData({...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
@@ -201,9 +171,9 @@ export function DashboardSindi() {
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#008080] via-[#006666] to-[#004444] bg-clip-text text-transparent">
-                      Dashboard Síndico
-                    </h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+                    Dashboard
+                  </h1>
                     <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">
                       Painel de Controle
                     </span>
@@ -325,7 +295,7 @@ export function DashboardSindi() {
                   </div>
                   <div>
                     <p className="text-sm text-gray-600 font-medium">Total Moradores</p>
-                    <p className="text-3xl font-bold text-gray-900">{pagamentos.total}</p>
+                    <p className="text-3xl font-bold text-gray-900">{moradores.length}</p>
                   </div>
                 </div>
               </div>
@@ -344,9 +314,9 @@ export function DashboardSindi() {
               </div>
             </div>
 
-            <ListaDeMoradoresSindi />
+            <ListaDeMoradoresSindi atualizar={atualizarListaMoradores} onChangeMoradores={setMoradores} />
 
-            <ListaDePorteirosSindi />
+            <ListaDePorteirosSindi atualizar={atualizarListaPorteiros} />
 
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <div className="flex items-center justify-between mb-6">
@@ -354,78 +324,53 @@ export function DashboardSindi() {
                   <MessageSquare className="w-5 h-5 text-[#008080]" />
                   Solicitações dos Moradores
                 </h2>
-                <button className="text-sm text-[#008080] hover:text-[#006666] flex items-center gap-2 bg-[#008080]/10 px-4 py-2 rounded-full transition-all duration-300 hover:bg-[#008080]/20">
-                  Ver todas <ChevronRight className="w-4 h-4" />
-                </button>
               </div>
               
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Morador</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conteúdo</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Descrição</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Data</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {solicitacoes.map((solicitacao) => (
-                      <tr key={solicitacao.id} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{solicitacao.morador}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.apartamento}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.tipo}</td>
-                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">{solicitacao.descricao}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.data}</td>
+                      <tr key={solicitacao.id_solicitacao} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{solicitacao.titulo}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.conteudo}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.tipo_solicitacao}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            solicitacao.status === 'pendente' ? 'bg-yellow-100 text-yellow-800' :
-                            solicitacao.status === 'em_andamento' ? 'bg-blue-100 text-blue-800' :
-                            'bg-green-100 text-green-800'
+                            solicitacao.status_solicitacao === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800' :
+                            solicitacao.status_solicitacao === 'ATIVO' ? 'bg-green-100 text-green-800':
+                            'bg-red-100 text-red-800'
                           }`}>
-                            {solicitacao.status === 'pendente' ? 'Pendente' : 
-                             solicitacao.status === 'em_andamento' ? 'Em andamento' : 'Resolvido'}
+                            {solicitacao.status_solicitacao === 'PENDENTE' ? 'Pendente' : 
+                             solicitacao.status_solicitacao === 'ATIVO' ? 'Ativo' : 'Resolvido'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button className="text-[#008080] hover:text-[#006666] mr-3">
-                            Visualizar
-                          </button>
-                          <button className="text-gray-600 hover:text-gray-900">
-                            Editar
-                          </button>
+                        <button 
+                          className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
+                          title="Ver detalhes"
+                        >
+                          <Eye className="w-4 h-4 inline" />
+                        </button>
+                        <button 
+                          className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
+                          title="Editar"
+                        >
+                          <Edit className="w-4 h-4 inline" />
+                        </button>
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-[#008080]" />
-                  Informações do Condomínio
-                </h2>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {condominiumInfo.map((info, index) => (
-                  <div 
-                    key={index} 
-                    className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-300 group"
-                  >
-                    <div className="flex items-start gap-3">
-                      <div className="p-2 rounded-lg bg-[#008080]/10 group-hover:bg-[#008080]/20 transition-colors duration-300">
-                        {info.icon}
-                      </div>
-                      <p className="text-sm text-gray-700 group-hover:text-[#008080] transition-colors">{info.text}</p>
-                    </div>
-                  </div>
-                ))}
               </div>
             </div>
           </div>
@@ -700,12 +645,9 @@ export function DashboardSindi() {
 
               <div className="mb-6">
                 <label className="block text-gray-700 mb-2">CPF</label>
-                <input
-                  type="text"
+                <InputCpf
                   value={moradorData.cpfMorador}
-                  onChange={(e) => setMoradorData({...moradorData, cpfMorador: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
+                  onChange={(val) => setMoradorData({ ...moradorData, cpfMorador: val })}
                 />
               </div>
 
@@ -764,12 +706,9 @@ export function DashboardSindi() {
 
               <div className="mb-6">
                 <label className="block text-gray-700 mb-2">CPF</label>
-                <input
-                  type="text"
+                <InputCpf
                   value={porteiroData.cpfPorteiro}
-                  onChange={(e) => setPorteiroData({...porteiroData, cpfPorteiro: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
+                  onChange={(val) => setPorteiroData({ ...porteiroData, cpfPorteiro: val })}
                 />
               </div>
 

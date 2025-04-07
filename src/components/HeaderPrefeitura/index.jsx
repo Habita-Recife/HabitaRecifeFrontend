@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronDown, LogOut, User} from "lucide-react";
+import { LogOut, Lock, ChevronDown} from "lucide-react";
 import logo from "../../assets/logo05.png";
+import { converterRoles, getDados } from '../../utils/utils';
 
-export default function HeaderPrefeitura() {
+const HeaderPrefeitura = () => {
   const username = localStorage.getItem('username');
   const token = localStorage.getItem('token');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -35,6 +36,10 @@ export default function HeaderPrefeitura() {
     }
   };
 
+  const handleChangePassword = () => {
+    navigate("/RecuperarSenha");
+  };
+
   return (
     <div className="w-full h-20 bg-[#2C3E50] flex items-center justify-between px-8 shadow-lg">
       <div className="flex items-center gap-10 justify-center">
@@ -47,14 +52,14 @@ export default function HeaderPrefeitura() {
         onClick={toggleDropdown}
         ref={dropdownRef}>
         <div className="w-12 h-12 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold text-xl group-hover:bg-white group-hover:text-[#008080] transition-colors duration-300 shadow-md">
-          P
+          {username.charAt(0).toUpperCase()}
         </div>
         <div className="flex flex-col">
           <span className="text-white font-bold group-hover:text-[#008080] transition-colors duration-300">
-            {username}
+            {username.toUpperCase()}
           </span>
           <span className="text-gray-300 text-sm group-hover:text-white transition-colors duration-300">
-            Prefeitura do Recife
+            {converterRoles(getDados(token).roles[0])}
           </span>
         </div>
         <ChevronDown 
@@ -63,25 +68,29 @@ export default function HeaderPrefeitura() {
             isDropdownOpen ? "transform rotate-180" : ""
           }`} 
         />
+
         {isDropdownOpen && (
           <div className="absolute top-16 right-0 w-64 bg-white rounded-lg shadow-xl z-50 overflow-hidden border border-gray-200">
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold">
-                  J
+                  {username.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">{username}</p>
-                  <p className="text-sm text-gray-500">joao.silva@email.com</p>
+                  <p className="font-semibold text-gray-800">{username.toUpperCase()}</p>
+                  <p className="text-sm text-gray-500">{getDados(token).sub}</p>
                 </div>
               </div>
             </div>
 
             <div className="py-1">
-              <a href="#" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-100">
-                <User size={16} className="mr-3 text-gray-500" />
-                Meu Perfil
-              </a>
+              <button 
+                onClick={handleChangePassword}
+                className="flex items-center w-full px-4 py-2 text-gray-700 hover:bg-gray-100 text-left"
+              >
+                <Lock size={16} className="mr-3 text-gray-500" />
+                Alterar Senha
+              </button>
             </div>
 
             <div className="border-t border-gray-200">
@@ -98,4 +107,6 @@ export default function HeaderPrefeitura() {
       </div>
     </div>
   );
-}
+};
+
+export default HeaderPrefeitura;

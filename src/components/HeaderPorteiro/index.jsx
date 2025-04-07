@@ -1,8 +1,12 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { LogOut, Lock, Bell, ChevronDown } from "lucide-react";
+import { LogOut, Lock, ChevronDown } from "lucide-react";
+import logo from "../../assets/logo05.png";
+import { converterRoles, getDados } from '../../utils/utils';
 
 const HeaderPorteiro = () => {
+  const username = localStorage.getItem('username');
+  const token = localStorage.getItem('token');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -25,8 +29,9 @@ const HeaderPorteiro = () => {
   };
 
   const handleLogout = () => {
-    console.log("Porteiro deslogado");
-    navigate("/login"); 
+    localStorage.removeItem('token');
+    localStorage.removeItem('username');
+    navigate("/login");
   };
 
   const handleChangePassword = () => {
@@ -35,14 +40,10 @@ const HeaderPorteiro = () => {
 
   return (
     <div className="w-full h-20 bg-[#2C3E50] flex items-center justify-between px-8 shadow-lg">
-      <div className="flex items-center gap-10">
-        <button className="flex items-center gap-2 text-white hover:text-[#008080] transition-colors duration-300 group">
-          <div className="p-2 bg-[#008080] rounded-full group-hover:bg-white transition-colors duration-300">
-            <Bell size={18} className="group-hover:text-[#008080]" />
+      <div className="flex items-center gap-10 justify-center">
+          <div className="flex flex-col items-center gap-3">
+            <img src={logo} alt="Logo" className="w-35   h-14" />
           </div>
-          <span className="font-medium">Notificações</span>
-          <ChevronDown size={16} className="opacity-70" />
-        </button>
       </div>
 
       <div 
@@ -51,11 +52,15 @@ const HeaderPorteiro = () => {
         ref={dropdownRef}
       >
         <div className="w-12 h-12 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold text-xl group-hover:bg-white group-hover:text-[#008080] transition-colors duration-300 shadow-md">
-          P
+          {username.charAt(0).toUpperCase()}
         </div>
         <div className="flex flex-col">
-          <span className="text-white font-bold group-hover:text-[#008080] transition-colors duration-300">Carlos Porteiro</span>
-          <span className="text-gray-300 text-sm group-hover:text-white transition-colors duration-300">Porteiro</span>
+          <span className="text-white font-bold group-hover:text-[#008080] transition-colors duration-300">
+            {username.toUpperCase()}
+          </span>
+          <span className="text-gray-300 text-sm group-hover:text-white transition-colors duration-300">
+            {converterRoles(getDados(token).roles[0])}
+          </span>
         </div>
         <ChevronDown 
           size={18} 
@@ -69,11 +74,11 @@ const HeaderPorteiro = () => {
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold">
-                  P
+                  {username.charAt(0).toUpperCase()}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">Carlos Porteiro</p>
-                  <p className="text-sm text-gray-500">carlos.porteiro@email.com</p>
+                  <p className="font-semibold text-gray-800">{username.toUpperCase()}</p>
+                  <p className="text-sm text-gray-500">{getDados(token).sub}</p>
                 </div>
               </div>
             </div>
