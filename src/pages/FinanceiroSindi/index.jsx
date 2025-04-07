@@ -79,7 +79,7 @@ export function FinanceiroSindi() {
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                             <div>
                                 <div className="flex items-center gap-3">
-                                    <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-[#008080] via-[#006666] to-[#004444] bg-clip-text text-transparent">
+                                    <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
                                         Financeiro
                                     </h1>
                                     <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">

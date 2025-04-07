@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Edit, Trash2, Eye, Search, User, Mail, Shield, AlertCircle} from "lucide-react";
+import { Edit, Trash2, Eye, Search, User, Mail, Shield, AlertCircle, Users, CheckCircle } from "lucide-react";
 import { listarPorteiros, editarPorteiro, excluirPorteiro } from "../../utils/api";
 
 export default function ListaDePorteirosSindi(props) {
@@ -8,6 +8,7 @@ export default function ListaDePorteirosSindi(props) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(null);
   const [editingPorteiro, setEditingPorteiro] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const [porteiroData, setPorteiroData] = useState({
     nomePorteiro: "",
@@ -67,7 +68,8 @@ export default function ListaDePorteirosSindi(props) {
         nomePorteiro: "",
         emailPorteiro: "",
         cpfPorteiro: ""
-      });      
+      });   
+      setShowSuccessModal(true);   
     }); 
   };
 
@@ -75,7 +77,7 @@ export default function ListaDePorteirosSindi(props) {
     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Shield className="w-5 h-5 text-[#2C3E50]" />
+          <Users className="w-5 h-5 text-[#008080]" />
           Lista de Porteiros
         </h2>
         
@@ -115,21 +117,21 @@ export default function ListaDePorteirosSindi(props) {
                     className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
                     title="Ver detalhes"
                   >
-                    <Eye className="w-4 h-4 inline" />
+                    <Eye className="w-4 h-4 inline" /> Ver
                   </button>
                   <button 
                     onClick={() => handleEdit(porteiro)}
                     className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
                     title="Editar"
                   >
-                    <Edit className="w-4 h-4 inline" />
+                    <Edit className="w-4 h-4 inline" /> Editar
                   </button>
                   <button 
                     onClick={() => setShowDeleteConfirm(porteiro.idPorteiro)}
                     className="text-red-600 hover:text-red-800"
                     title="Excluir"
                   >
-                    <Trash2 className="w-4 h-4 inline" />
+                    <Trash2 className="w-4 h-4 inline" /> Excluir
                   </button>
                 </td>
               </tr>
@@ -278,6 +280,28 @@ export default function ListaDePorteirosSindi(props) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {'Alterações salvas com sucesso!'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {'As informações do porteiro foram atualizadas.'}
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

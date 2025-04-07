@@ -2,6 +2,7 @@ import { useState } from 'react';
 import HeaderMorador from "../../components/HeaderMorador";
 import SidebarMorador from "../../components/SidebarMorador";
 import ModalSolicitacao from "../../components/ModalSolicitacao";
+import { Eye, X } from "lucide-react";
 
 export function SolicitacaoMorador() {
   const [modalAberto, setModalAberto] = useState(false);
@@ -109,10 +110,12 @@ export function SolicitacaoMorador() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderMorador />
 
-        <main className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-6xl mx-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <div className="max-w-6xl mx-auto space-y-8">
             <div className="flex justify-between items-center mb-8">
-              <h1 className="text-2xl font-bold text-gray-800">Minhas Solicitações</h1>
+              <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+                Solicitações
+              </h1>
               <button
                 onClick={abrirModal}
                 className="px-6 py-2 bg-[rgb(0,128,128)] text-white rounded-lg hover:bg-[rgba(0,128,128,0.9)] hover:scale-105 transition-all duration-300"
@@ -233,15 +236,16 @@ export function SolicitacaoMorador() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button
+                          <button 
                             onClick={() => visualizarSolicitacao(solicitacao)}
-                            className="text-[rgb(0,128,128)] hover:text-[rgba(0,128,128,0.8)] mr-3"
+                            className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
+                            title="Ver detalhes"
                           >
-                            Visualizar
+                            <Eye className="w-4 h-4 inline" /> Ver
                           </button>
                           {solicitacao.status === 'Pendente' && (
                             <button className="text-red-600 hover:text-red-900">
-                              Cancelar
+                              <X className="w-4 h-4 inline" /> Cancelar
                             </button>
                           )}
                         </td>

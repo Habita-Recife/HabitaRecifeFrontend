@@ -314,30 +314,6 @@ const DashboardMorador = () => {
                   ))}
                 </div>
               </div>
-
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-3">
-                    <Building2 className="w-6 h-6 text-[#008080]" />
-                    Informações do Condomínio
-                  </h2>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {condominiumInfo.map((info, index) => (
-                    <div 
-                      key={index} 
-                      className="bg-gradient-to-br from-gray-50 to-white p-4 rounded-xl border border-gray-100 hover:shadow-lg transition-all duration-300 group"
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-lg bg-[#008080]/10 group-hover:bg-[#008080]/20 transition-colors duration-300">
-                          {info.icon}
-                        </div>
-                        <p className="text-sm text-gray-700 group-hover:text-[#008080] transition-colors">{info.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         </div>

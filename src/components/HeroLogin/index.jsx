@@ -2,6 +2,7 @@ import { getDados } from '../../utils/utils';
 import { useState } from "react";
 import womanImage from "../../assets/Womanimage.png";
 import logo from "../../assets/logo04.png";
+import logoSemNome from "../../assets/logo06.png";
 import ModalForgot from "../ModalForgot";
 import InputComponent from "../InputComponent";
 import ButtonComponent from "../ButtonComponent";
@@ -53,8 +54,13 @@ const HeroLogin = () => {
   return (
     <div className="flex flex-col lg:flex-row h-screen">
 
-      <div className="bg-[#2C3E50] w-full lg:w-1/3 h-screen p-4 sm:p-8 flex flex-col items-center text-white shadow-md relative z-0">
+      <div className="bg-[#2C3E50] w-full lg:w-1/2 h-screen p-4 sm:p-8 flex flex-col items-center text-white shadow-md relative z-0">
         <div className="flex flex-col items-center gap-2 mb-4 sm:mb-6">
+          <img
+            src={logoSemNome}
+            alt="Habita Recife Logo"
+            className="w-30 sm:w-25 h-18 sm:h-40 drop-shadow-lg"
+          />
           <h1 className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] text-center">
             Bem-vindo ao <span className="text-[#008080]">Habita Recife</span>!
           </h1>
@@ -73,7 +79,7 @@ const HeroLogin = () => {
             <label className="text-left text-sm sm:text-base">Email:</label>
             <InputComponent
               typeInput="email"
-              placeholderText="Insira aqui seu email..."
+              placeholderText="Insira aqui seu email."
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
@@ -83,7 +89,7 @@ const HeroLogin = () => {
             <label className="text-left text-sm sm:text-base">Senha:</label>
             <InputComponent
               typeInput="password"
-              placeholderText="Insira aqui sua senha..."
+              placeholderText="Insira aqui sua senha."
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
@@ -129,10 +135,6 @@ const HeroLogin = () => {
             </p>
           </div>
         </form>
-
-        <div className="absolute bottom-0 right-0 w-32 h-32 sm:w-40 sm:h-40">
-          <img className="w-full h-full object-contain" src={womanImage} alt="Mulher ilustrativa" />
-        </div>
       </div>
 
 

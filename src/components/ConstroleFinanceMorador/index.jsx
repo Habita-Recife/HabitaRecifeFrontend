@@ -37,18 +37,17 @@ const ControlFinanceMorador = () => {
     }
   ];
 
-  // o modal eh para visualizar os pagamentos pendentes
   const openModal = (payment) => {
     setSelectedPayment(payment);
     setModalOpen(true);
   };
 
   return (
-    <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-3xl font-bold text-[#2C3E50] mb-2">Cobranças e Pagamentos</h1>
-      
-      {/* um dashboard com as cobranças pendentes e tal*/}
-      <section className="mb-8">
+    <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+      <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+        Cobranças e Pagamentos
+      </h1>
+      <section className="mt-8 mb-8">
         <h2 className="text-xl font-semibold text-[#2C3E50] mb-4">Verificar Cobranças</h2>
         <div className="grid md:grid-cols-3 gap-4">
           {charges.map((charge) => (
@@ -61,7 +60,6 @@ const ControlFinanceMorador = () => {
         </div>
       </section>
 
-      {/* esse eh o historico de pagamentos  porem nao coloquei localstorage como sempre*/}
       <section>
         <h2 className="text-xl font-semibold text-[#2C3E50] mb-4">Histórico de Pagamentos</h2>
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
@@ -105,7 +103,6 @@ const ControlFinanceMorador = () => {
         </div>
       </section>
 
-      {/* esse eh o modal de detalhes do pagamento */}
       {modalOpen && selectedPayment && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 max-w-md w-full">

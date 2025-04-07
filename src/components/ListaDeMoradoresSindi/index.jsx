@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Edit, Trash2, Eye, Search, User, Mail, Car, Shield, AlertCircle, Users } from "lucide-react";
+import { Edit, Trash2, Eye, Search, User, Mail, Car, Shield, AlertCircle, Users, Home, CheckCircle } from "lucide-react";
 import { listarMoradores, editarMorador, excluirMorador } from "../../utils/api";
 
 export default function ListaDeMoradoresSindi(props) {
@@ -9,6 +9,7 @@ export default function ListaDeMoradoresSindi(props) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(null);
   const [editingMorador, setEditingMorador] = useState(null);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   
   const [moradorData, setMoradorData] = useState({
     nomeMorador: "",
@@ -56,7 +57,9 @@ export default function ListaDeMoradoresSindi(props) {
       emailMorador: morador.emailMorador,
       cpfMorador: morador.cpfMorador,
       tipoMorador: morador.tipoMorador,
-      veiculoMorador: morador.veiculoMorador
+      veiculoMorador: morador.veiculoMorador,
+      apartamento: morador.apartamento,
+      bloco: morador.bloco
     });
   };
 
@@ -79,8 +82,12 @@ export default function ListaDeMoradoresSindi(props) {
         emailMorador: "",
         cpfMorador: "",
         tipoMorador: "PROPRIETARIO",
-        veiculoMorador: ""
+        veiculoMorador: "",
+        apartamento: 0,
+        bloco: 0
       });      
+
+      setShowSuccessModal(true);
 
       const listaAtualizada = moradores.map(m => 
         m.idMorador === editingMorador.idMorador
@@ -120,6 +127,7 @@ export default function ListaDeMoradoresSindi(props) {
             <tr>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento/Bloco</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo/Placa</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
@@ -131,6 +139,7 @@ export default function ListaDeMoradoresSindi(props) {
               <tr key={morador.idMorador} className="hover:bg-gray-50">
                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nomeMorador}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpfMorador}</td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento + " - Bloco " + morador.bloco}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.veiculoMorador || "Não informado"}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Familiar'}</td>
                 <td className="px-6 py-4 whitespace-nowrap">
@@ -146,21 +155,21 @@ export default function ListaDeMoradoresSindi(props) {
                     className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
                     title="Ver detalhes"
                   >
-                    <Eye className="w-4 h-4 inline" />
+                    <Eye className="w-4 h-4 inline" /> Ver
                   </button>
                   <button 
                     onClick={() => handleEdit(morador)}
                     className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
                     title="Editar"
                   >
-                    <Edit className="w-4 h-4 inline" />
+                    <Edit className="w-4 h-4 inline" /> Editar
                   </button>
                   <button 
                     onClick={() => setShowDeleteConfirm(morador.idMorador)}
                     className="text-red-600 hover:text-red-800"
                     title="Excluir"
                   >
-                    <Trash2 className="w-4 h-4 inline" />
+                    <Trash2 className="w-4 h-4 inline" /> Excluir
                   </button>
                 </td>
               </tr>
@@ -234,13 +243,13 @@ export default function ListaDeMoradoresSindi(props) {
                 </div>
               </div>
               
-              {/* <div className="flex items-start gap-3">
+              <div className="flex items-start gap-3">
                 <Home className="w-5 h-5 text-[#008080] mt-0.5" />
                 <div>
                   <p className="text-sm text-gray-500">Apartamento/Bloco</p>
-                  <p className="font-medium text-gray-900">{showDetailsModal.apartamento} - {showDetailsModal.bloco}</p>
+                  <p className="font-medium text-gray-900">{showDetailsModal.apartamento}  - Bloco {showDetailsModal.bloco}</p>
                 </div>
-              </div> */}
+              </div>
               
               <div className="flex items-start gap-3">
                 <User className="w-5 h-5 text-[#008080] mt-0.5" />
@@ -344,6 +353,28 @@ export default function ListaDeMoradoresSindi(props) {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {'Alterações salvas com sucesso!'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {'As informações do morador foram atualizadas.'}
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}

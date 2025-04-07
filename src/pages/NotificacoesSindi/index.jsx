@@ -79,9 +79,9 @@ export function NotificacoesSindi() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderSindi />
         
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
           <div className="max-w-6xl mx-auto space-y-8">
-            <h1 className="text-3xl font-bold text-gray-800 pl-6 pt-4 pb-2">
+            <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
               Notificações e Solicitações
             </h1>
 
