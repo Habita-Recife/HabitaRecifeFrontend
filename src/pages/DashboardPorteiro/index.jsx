@@ -1,22 +1,22 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import HeaderPorteiro from "../../components/HeaderPorteiro";
-import SidebarPorteiro from "../../components/SidebarPorteiro";
-import { Package, UserPlus, Clock, CheckCircle } from 'lucide-react';
-import { cadastrarVisitante, listarVisitantes, registrarSaidaVisitante, obterDadosPorteiroLogado } from '../../utils/api';
+import { Package, UserPlus, CheckCircle } from 'lucide-react';
+import { listarPorteiros, cadastrarVisitante, listarVisitantes, registrarSaidaVisitante } from '../../utils/api';
 import { getDados } from '../../utils/utils';
+import InputCpf from "../../components/InputCpf";
+import InputTelefone from '../../components/InputTelefone';
 
 export function DashboardPorteiro() {
 
   const navigate = useNavigate();
 
-  const [porteiro] = useState({ nome: "Carlos Porteiro" });
+  const [porteiro, setPorteiro] = useState({});
   const [showEncomendaModal, setShowEncomendaModal] = useState(false);
   const [showVisitanteModal, setShowVisitanteModal] = useState(false);
   const [encomendas, setEncomendas] = useState([]);
   const [visitantes, setVisitantes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [idPorteiro] = useState(3);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -27,15 +27,15 @@ export function DashboardPorteiro() {
       if (dadosUsuario.roles[0] !== 'ROLE_PORTEIRO') {
         navigate('/login');
       } else {
-        obterDadosPorteiroLogado()
-          .then(response => {
-            console.log("Dados do porteiro:", response.data);
+        listarPorteiros().then((response) => {
+          const porteiroLogado = response.data.find(c =>
+            c.emailPorteiro === getDados(token).sub
+          );
+          
+          if (porteiroLogado) {
             setPorteiro(response.data);
-            setIdPorteiro(response.data.idPorteiro);
-          })
-          .catch(error => {
-            console.error("Erro ao obter dados do porteiro:", error);
-          });
+          }
+        });
 
         listarVisitantes().then((response) => {
           if (response.data && response.data.length > 0) {
@@ -85,6 +85,13 @@ export function DashboardPorteiro() {
     setNovoVisitante(prev => ({ ...prev, [name]: value }));
   };
 
+  const handleCpfChange = (value) => {
+    setNovoVisitante(prev => ({ ...prev, cpfVisitante: value }));
+  };
+
+  const handleTelefoneChange = (value) => {
+    setNovoVisitante(prev => ({ ...prev, telefoneVisitante: value }));
+  };
 
   const handleSubmitEncomenda = (e) => {
     e.preventDefault();
@@ -122,7 +129,7 @@ export function DashboardPorteiro() {
 
 
   const handleSaidaVisitante = (idVisitante) => {
-    console.log("Registrando saída para o visitante ID:", idVisitante, "com porteiro ID:", idPorteiro);
+    console.log("Registrando saída para o visitante ID:", idVisitante, "com porteiro ID:", porteiro.idPorteiro);
 
     if (!idVisitante) {
       console.error("ID do visitante é undefined ou null");
@@ -130,7 +137,7 @@ export function DashboardPorteiro() {
       return;
     }
 
-    registrarSaidaVisitante(idVisitante, idPorteiro)
+    registrarSaidaVisitante(idVisitante, porteiro.idPorteiro)
       .then(response => {
         console.log("Saída registrada com sucesso:", response.data);
         return listarVisitantes();
@@ -177,7 +184,6 @@ export function DashboardPorteiro() {
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <SidebarPorteiro />
 
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderPorteiro />
@@ -186,7 +192,7 @@ export function DashboardPorteiro() {
 
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-gray-800">
-              Bom dia, {porteiro.nome.split(' ')[0]}!
+              Bom dia, {porteiro?.nomePorteiro?.split(' ')[0] || 'Porteiro'}!
             </h1>
 
           </div>
@@ -422,25 +428,17 @@ export function DashboardPorteiro() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">CPF</label>
-                  <input
-                    type="text"
-                    name="cpfVisitante"
+                  <InputCpf
                     value={novoVisitante.cpfVisitante}
-                    onChange={handleVisitanteChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
+                    onChange={handleCpfChange}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Telefone</label>
-                  <input
-                    type="tel"
-                    name="numeroTelefone"
+                  <InputTelefone
                     value={novoVisitante.numeroTelefone}
-                    onChange={handleVisitanteChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md"
-                    required
+                    onChange={handleTelefoneChange}
                   />
                 </div>
               </div>

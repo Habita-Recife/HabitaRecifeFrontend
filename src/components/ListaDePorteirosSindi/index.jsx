@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Edit, Trash2, Eye, Search, User, Mail, Shield, AlertCircle} from "lucide-react";
 import { listarPorteiros, editarPorteiro, excluirPorteiro } from "../../utils/api";
 
-export default function ListaDePorteirosSindi() {
+export default function ListaDePorteirosSindi(props) {
   const [porteiros, setPorteiros] = useState([]);
   const [searchCpf, setSearchCpf] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -16,10 +16,17 @@ export default function ListaDePorteirosSindi() {
   });
 
   useEffect(() => {
-    listarPorteiros().then((response) => {
-      setPorteiros(response.data);
-    });
-  }, []);
+    const fetchPorteiros = async () => {
+      try {
+        const response = await listarPorteiros();
+        setPorteiros(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar porteiros:", error);
+      }
+    };
+  
+    fetchPorteiros();
+  }, [props.atualizar]);
 
   const filteredPorteiros = porteiros.filter(porteiro =>
     porteiro.cpfPorteiro.includes(searchCpf)
