@@ -227,23 +227,6 @@ export function listarSolicitacoes() {
     return axios.get(`${API_URL}/v1/solicitacao`);
 }
 
-export function listarPorteiros() {
-    const token = localStorage.getItem('token');
-    return axios.get(`${API_URL}/v1/porteiro`, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-}
-
-export function cadastrarPorteiro(porteiro) {
-    const token = localStorage.getItem('token');
-    return axios.post(`${API_URL}/v1/porteiro`, porteiro, {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-    });
-}
 export function listarVisitantesPorMorador(idMorador) {
     const token = localStorage.getItem('token');
     return axios.get(`${API_URL}/v1/visitante/morador/${idMorador}`, {
