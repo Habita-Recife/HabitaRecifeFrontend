@@ -4,8 +4,6 @@ import SidebarSindi from "../../components/SideBarSindi";
 import HeaderSindi from "../../components/HeaderSindi";
 import InputCpf from "../../components/InputCpf";
 import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Clock, Eye, Edit } from "lucide-react";
-import CadPorteiroSucessSindi from "../../components/CadPorteiroSucessSindi";
-import CadMoradorSucessSindi from "../../components/CadMoradorSucessSindi";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
 import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes } from "../../utils/api";
@@ -23,6 +21,7 @@ export function DashboardSindi() {
   const [showSuccessPorteiroModal, setShowSuccessPorteiroModal] = useState(false);
   const [atualizarListaPorteiros, setAtualizarListaPorteiros] = useState(false);
   const [atualizarListaMoradores, setAtualizarListaMoradores] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [moradores, setMoradores] = useState([]);
   
@@ -46,6 +45,8 @@ export function DashboardSindi() {
     veiculoMorador: "",
     tipoMorador: "PROPRIETARIO",
     cpfMorador: "",
+    bloco: 0,
+    apartamento: 0,
     id_condominio: ""
   });
 
@@ -142,8 +143,8 @@ export function DashboardSindi() {
     cadastrarMorador(moradorData).then((response) => {
       setAtualizarListaMoradores((atualiza) => !atualiza);
       setShowCadastrarMoradorModal(false);
-      setShowSuccessMoradorModal(true);
-      setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "" });
+      setShowSuccessModal(true);
+      setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "", bloco: 0, apartamento: 0 });
     });
     
   };
@@ -154,7 +155,7 @@ export function DashboardSindi() {
     cadastrarPorteiro(porteiroData).then((response) => {
       setAtualizarListaPorteiros((atualiza) => !atualiza);
       setShowCadastrarPorteiroModal(false);
-      setShowSuccessPorteiroModal(true);
+      setShowSuccessModal(true);
       setPorteiroData({...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
     });
   };
@@ -208,7 +209,7 @@ export function DashboardSindi() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
               <button 
                 onClick={() => setShowAvisoModal(true)}
                 className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden"
@@ -241,7 +242,7 @@ export function DashboardSindi() {
                 </div>
               </button>
 
-              <button 
+              {/* <button 
                 onClick={() => setShowInadimplentesModal(true)}
                 className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden"
               >
@@ -255,11 +256,11 @@ export function DashboardSindi() {
                     <p className="text-lg font-bold text-gray-900">Ver moradores</p>
                   </div>
                 </div>
-              </button>
+              </button> */}
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
+              {/* <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center gap-4">
                   <div className="bg-green-100 p-4 rounded-2xl group-hover:bg-green-200 transition-colors duration-300">
@@ -271,9 +272,9 @@ export function DashboardSindi() {
                     <p className="text-xs text-gray-500">{pagamentos.total - Math.round(pagamentos.total * pagamentos.inadimplentes / 100)} moradores</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
-              <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
+              {/* <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 <div className="relative flex items-center gap-4">
                   <div className="bg-red-100 p-4 rounded-2xl group-hover:bg-red-200 transition-colors duration-300">
@@ -285,7 +286,7 @@ export function DashboardSindi() {
                     <p className="text-xs text-gray-500">{Math.round(pagamentos.total * pagamentos.inadimplentes / 100)} moradores</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
               <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -643,6 +644,31 @@ export function DashboardSindi() {
                 </select>
               </div>
 
+              <div className="mb-4">
+                <div className="flex gap-4">
+                  <div className="flex-1">
+                    <label className="block text-gray-700 mb-2">Bloco</label>
+                    <input
+                      type="number"
+                      value={moradorData.bloco}
+                      onChange={(e) => setMoradorData({ ...moradorData, bloco: parseInt(e.target.value)})}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      placeholder="Bloco"
+                    />
+                  </div>
+                  <div className="flex-1">
+                    <label className="block text-gray-700 mb-2">Apartamento</label>
+                    <input
+                      type="number"
+                      value={moradorData.apartamento}
+                      onChange={(e) => setMoradorData({ ...moradorData, apartamento: parseInt(e.target.value) })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      placeholder="Apartamento"
+                    />
+                  </div>
+                </div>
+              </div>
+
               <div className="mb-6">
                 <label className="block text-gray-700 mb-2">CPF</label>
                 <InputCpf
@@ -732,8 +758,27 @@ export function DashboardSindi() {
         </div>
       )}
 
-      <CadPorteiroSucessSindi isOpen={showSuccessPorteiroModal} onClose={() => setShowSuccessPorteiroModal(false)} />
-      <CadMoradorSucessSindi isOpen={showSuccessMoradorModal} onClose={() => setShowSuccessMoradorModal(false)} />
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {'Cadastro realizado com sucesso!'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {'O novo registro foi adicionado ao sistema.'}
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

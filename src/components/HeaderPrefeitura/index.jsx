@@ -52,14 +52,14 @@ const HeaderPrefeitura = () => {
         onClick={toggleDropdown}
         ref={dropdownRef}>
         <div className="w-12 h-12 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold text-xl group-hover:bg-white group-hover:text-[#008080] transition-colors duration-300 shadow-md">
-          {username.charAt(0).toUpperCase()}
+          {localStorage.getItem('username')?.charAt(0).toUpperCase() || ''}
         </div>
         <div className="flex flex-col">
           <span className="text-white font-bold group-hover:text-[#008080] transition-colors duration-300">
-            {username.toUpperCase()}
+            {localStorage.getItem('username')?.toUpperCase() || ''}
           </span>
           <span className="text-gray-300 text-sm group-hover:text-white transition-colors duration-300">
-            {converterRoles(getDados(token).roles[0])}
+            {converterRoles(getDados(token)?.roles?.[0] || '')}
           </span>
         </div>
         <ChevronDown 
@@ -74,11 +74,11 @@ const HeaderPrefeitura = () => {
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold">
-                  {username.charAt(0).toUpperCase()}
+                  {localStorage.getItem('username')?.charAt(0).toUpperCase() || ''}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">{username.toUpperCase()}</p>
-                  <p className="text-sm text-gray-500">{getDados(token).sub}</p>
+                  <p className="font-semibold text-gray-800">{localStorage.getItem('username')?.toUpperCase() || ''}</p>
+                  <p className="text-sm text-gray-500">{getDados(token)?.sub || ''}</p>
                 </div>
               </div>
             </div>

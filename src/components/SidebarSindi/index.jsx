@@ -12,7 +12,6 @@ const SidebarSindi = () => {
   const rotas = {
     "Início": "/DashboardSindi",
     "Notificações": "/NotificacoesSindi",
-    "Moradores": "/MoradoresSindi",
     "Reuniões": "/ReunioesSindi",
     "Serviços": "/ServiSindico",
     "Financeiro": "/FinanceiroSindi" 

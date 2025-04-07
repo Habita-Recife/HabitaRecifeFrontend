@@ -35,8 +35,8 @@ export function DashboardPrefeitura() {
   const [condominioData, setCondominioData] = useState({
     nomeCondominio: "",
     enderecoCondominio: "",
-    numeroApartamento: "",
-    numeroBloco: "",
+    numeroApartamento: 0,
+    numeroBloco: 0,
     nomeSindico: ""
   });
 
@@ -94,8 +94,8 @@ export function DashboardPrefeitura() {
     setCondominioData({
       nomeCondominio: "",
       enderecoCondominio: "",
-      numeroApartamento: "",
-      numeroBloco: ""
+      numeroApartamento: 0,
+      numeroBloco: 0
     });
     setEditingCondominio(null);
   };
@@ -145,8 +145,8 @@ export function DashboardPrefeitura() {
     setCondominioData({
       nomeCondominio: condominio.nomeCondominio,
       enderecoCondominio: condominio.enderecoCondominio,
-      numeroApartamento: condominio.numeroApartamento.toString(),
-      numeroBloco: condominio.numeroBloco.toString()
+      numeroApartamento: parseInt(condominio.numeroApartamento),
+      numeroBloco: parseInt(condominio.numeroBloco)
     });
     setEditingCondominio(condominio);
     setShowCadastrarCondominioModal(true);
@@ -354,8 +354,8 @@ export function DashboardPrefeitura() {
                 setCondominioData({
                   nomeCondominio: "",
                   enderecoCondominio: "",
-                  numeroApartamento: "",
-                  numeroBloco: ""
+                  numeroApartamento: 0,
+                  numeroBloco: 0
                 });
               }} className="text-gray-500 hover:text-gray-700">
                 ✕
@@ -393,7 +393,7 @@ export function DashboardPrefeitura() {
                   <input
                     type="number"
                     value={condominioData.numeroApartamento}
-                    onChange={(e) => setCondominioData({...condominioData, numeroApartamento: e.target.value})}
+                    onChange={(e) => setCondominioData({...condominioData, numeroApartamento: parseInt(e.target.value)})}
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                     required
                   />
@@ -404,7 +404,7 @@ export function DashboardPrefeitura() {
                     <input
                       type="number"
                       value={condominioData.numeroBloco}
-                      onChange={(e) => setCondominioData({...condominioData, numeroBloco: e.target.value})}
+                      onChange={(e) => setCondominioData({...condominioData, numeroBloco: parseInt(e.target.value)})}
                       className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#2C3E50]"
                       required
                     />
@@ -422,8 +422,8 @@ export function DashboardPrefeitura() {
                     setCondominioData({
                       nomeCondominio: "",
                       enderecoCondominio: "",
-                      numeroApartamento: "",
-                      numeroBloco: ""
+                      numeroApartamento: 0,
+                      numeroBloco: 0
                     });
                   }}
                   className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"

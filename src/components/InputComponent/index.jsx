@@ -19,7 +19,7 @@ const InputComponent = ({
   return (
     <div className="relative w-full">
       <input 
-        className="bg-[#ECF0F1] text-gray-500 w-full h-10 text-sm shadow-md rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-500 focus:shadow-blue-300 focus:shadow-xl transform transition-all duration-300 ease-in-out focus:scale-105 placeholder:opacity-50 focus:placeholder-opacity-0 pr-10" 
+        className="bg-[#ECF0F1] text-gray-500 w-full h-10 text-sm rounded-md border border-gray-300 focus:border-blue-500 focus:outline-none placeholder:opacity-50 pr-10 pl-4" 
         type={isPassword && showPassword ? 'text' : typeInput} 
         placeholder={placeholderText}
         value={value || ''}
@@ -27,7 +27,7 @@ const InputComponent = ({
         required={required}
         inputMode={inputMode}
         maxLength={maxLength}
-        name={name} // Adicionei o name aqui
+        name={name}
       />
       {isPassword && showEyeIcon && (
         <button

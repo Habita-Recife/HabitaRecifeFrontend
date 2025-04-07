@@ -7,9 +7,6 @@ const ComponentServicos = () => {
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [modalAberto, setModalAberto] = useState(false);
   const [servicoContratado, setServicoContratado] = useState('');
-
-  // aq vai ser os servicos que vao ser mostrados na tela
-  // esse array vai ser dinamico e vai ser puxado do banco de dados assim espero ne
   
   const servicos = [
     {
@@ -99,8 +96,6 @@ const ComponentServicos = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 p-6 relative">
-      {/* aq o modal estatica de servico contratado so ilustrativo kkk */}
-      {/* EU SEI QUE ISSO PODIA SER UM COMPONENTE SEPARADO MAS TA TUDIN BEM */}
       {modalAberto && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl transform transition-all duration-300 scale-100">
@@ -129,9 +124,10 @@ const ComponentServicos = () => {
         </div>
       )}
 
-      {/* o header da pagina de servicos basiquinho */}
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">Serviços Disponíveis</h1>
+        <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+          Vitrine de Serviços Disponíveis
+        </h1>
         <div className="flex space-x-4">
           <div className="relative">
             <button 
@@ -183,11 +179,9 @@ const ComponentServicos = () => {
         </div>
       </div>
 
-      {/* aq o pae atolou grid pra ser os cards de servicos ai fic tudin um do lado do outro */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {servicosFiltrados.map((servico) => (
           <div key={servico.id} className="bg-white rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-[1.02]">
-            {/* o header do card de servico */}
             <div className="p-6 pb-0">
               <div className="flex justify-between items-start">
                 <div className="flex items-center space-x-4">
@@ -205,7 +199,6 @@ const ComponentServicos = () => {
               </div>
             </div>
 
-            {/* as informacoes do card de servico']]] */}
             <div className="p-6 pt-4">
               <div className="flex items-center text-sm text-gray-500 mb-3">
                 <MapPin className="w-4 h-4 mr-2" />
@@ -237,7 +230,6 @@ const ComponentServicos = () => {
               </div>
             </div>
 
-            {/* aq eh o botao de contratar servico e ta com o css de hover e etc */}
             <div className="border-t border-gray-100 px-6 py-3 bg-gray-50">
               <button 
                 className={`w-full py-2 rounded-lg font-medium transition-all duration-300 ${

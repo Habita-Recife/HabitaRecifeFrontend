@@ -5,7 +5,6 @@ export function Login() {
     return (
         <>
             <HeroLogin />
-            <FooterLogin />
         </>
     )
 }

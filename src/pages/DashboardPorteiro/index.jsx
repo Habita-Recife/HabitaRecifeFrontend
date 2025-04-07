@@ -38,9 +38,6 @@ export function DashboardPorteiro() {
         });
 
         listarVisitantes().then((response) => {
-          if (response.data && response.data.length > 0) {
-            console.log("Dados retornados pela API:", JSON.stringify(response.data[0], null, 2));
-          }
 
           setVisitantes(response.data);
           setIsLoading(false);

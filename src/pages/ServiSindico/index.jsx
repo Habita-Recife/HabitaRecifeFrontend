@@ -97,12 +97,14 @@ export function ServiSindico() {
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderSindi />
         
-        <main className="flex-1 p-6 overflow-y-auto">
-          <div className="max-w-6xl mx-auto">
-            <h1 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-              <ClipboardList className="text-[#008080]" />
-              Gestão de Serviços
-            </h1>
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+          <div className="max-w-6xl mx-auto space-y-8">
+
+            <div className="flex justify-between items-center mb-6">
+              <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+                Gestão de Serviços
+              </h1>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Serviços Pendentes */}

@@ -14,7 +14,6 @@ const ButtonComponent = ({
           rounded-lg py-3 px-6
           shadow-md 
           transition-all duration-200
-          transform hover:scale-105
           hover:from-[#009090] hover:to-[#007777]
           active:scale-[0.98]
           focus:outline-none focus:ring-2 focus:ring-[#008080]/50
