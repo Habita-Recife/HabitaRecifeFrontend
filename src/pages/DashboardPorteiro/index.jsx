@@ -122,7 +122,6 @@ export function DashboardPorteiro() {
 
 
   const handleSaidaVisitante = (idVisitante) => {
-    console.log("Registrando saída para o visitante ID:", idVisitante, "com porteiro ID:", idPorteiro);
 
     if (!idVisitante) {
       console.error("ID do visitante é undefined ou null");
