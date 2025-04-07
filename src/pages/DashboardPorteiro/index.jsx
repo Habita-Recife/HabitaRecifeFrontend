@@ -17,6 +17,7 @@ export function DashboardPorteiro() {
   const [encomendas, setEncomendas] = useState([]);
   const [visitantes, setVisitantes] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -87,7 +88,7 @@ export function DashboardPorteiro() {
   };
 
   const handleTelefoneChange = (value) => {
-    setNovoVisitante(prev => ({ ...prev, telefoneVisitante: value }));
+    setNovoVisitante(prev => ({ ...prev, numeroTelefone: value }));
   };
 
   const handleSubmitEncomenda = (e) => {
@@ -106,7 +107,6 @@ export function DashboardPorteiro() {
     e.preventDefault();
     cadastrarVisitante(novoVisitante)
       .then(response => {
-        console.log("Visitante cadastrado:", response.data);
         listarVisitantes().then((response) => {
           setVisitantes(response.data);
         });
@@ -135,12 +135,11 @@ export function DashboardPorteiro() {
 
     registrarSaidaVisitante(idVisitante, porteiro.idPorteiro)
       .then(response => {
-        console.log("Saída registrada com sucesso:", response.data);
         return listarVisitantes();
       })
       .then(response => {
         setVisitantes(response.data);
-        alert("Saída registrada com sucesso!");
+        setShowSuccessModal(true);
       })
       .catch(error => {
         console.error("Erro ao registrar saída:", error);
@@ -455,6 +454,28 @@ export function DashboardPorteiro() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+            <div className="mb-4">
+              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">
+              {'Saída registrada com sucesso!'}
+            </h3>
+            <p className="text-gray-600 mb-6">
+              {'As informações do visitante foram atualizadas.'}
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
+            >
+              OK
+            </button>
           </div>
         </div>
       )}
