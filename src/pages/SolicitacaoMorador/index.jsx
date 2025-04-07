@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import HeaderMorador from "../../components/HeaderMorador";
 import SidebarMorador from "../../components/SidebarMorador";
+import ModalSolicitacao from "../../components/ModalSolicitacao";
 
 export function SolicitacaoMorador() {
   const [modalAberto, setModalAberto] = useState(false);
@@ -9,6 +10,18 @@ export function SolicitacaoMorador() {
   const [tipoSolicitacao, setTipoSolicitacao] = useState('');
   const [titulo, setTitulo] = useState('');
   const [conteudo, setConteudo] = useState('');
+  const [tipoVitrine, setTipoVitrine] = useState('');
+  const [nomeProduto, setNomeProduto] = useState('');
+  const [valorProduto, setValorProduto] = useState('');
+  const [descricaoProduto, setDescricaoProduto] = useState('');
+  const [telefoneContato, setTelefoneContato] = useState('');
+  const [reservaData, setReservaData] = useState({
+    espaco: '',
+  data: '',
+  horario: '',
+  descricao: ''
+});
+
   const [solicitacoes, setSolicitacoes] = useState([
     {
       id: 1,
@@ -92,10 +105,10 @@ export function SolicitacaoMorador() {
   return (
     <div className="flex h-screen bg-gray-50">
       <SidebarMorador />
-      
+
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderMorador />
-        
+
         <main className="flex-1 overflow-y-auto p-6">
           <div className="max-w-6xl mx-auto">
             <div className="flex justify-between items-center mb-8">
@@ -108,90 +121,39 @@ export function SolicitacaoMorador() {
               </button>
             </div>
 
-            {/* Esse eh o modal para novas solicitações!! mas nao coloquei localstorage */}
-            {modalAberto && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
-                  <div className="flex justify-between items-center mb-4">
-                    <h2 className="text-xl font-bold text-[rgb(0,128,128)]">Nova Solicitação</h2>
-                    <button 
-                      onClick={fecharModal}
-                      className="text-gray-500 hover:text-gray-700"
-                    >
-                      ✕
-                    </button>
-                  </div>
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 mb-2">Tipo de Solicitação</label>
-                    <div className="grid grid-cols-3 gap-2">
-                      <button
-                        onClick={() => setTipoSolicitacao('Reclamação')}
-                        className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'Reclamação' ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]' : 'border-gray-300'}`}
-                      >
-                        Reclamação
-                      </button>
-                      <button
-                        onClick={() => setTipoSolicitacao('Aviso')}
-                        className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'Aviso' ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]' : 'border-gray-300'}`}
-                      >
-                        Aviso
-                      </button>
-                      <button
-                        onClick={() => setTipoSolicitacao('Solicitação')}
-                        className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'Solicitação' ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]' : 'border-gray-300'}`}
-                      >
-                        Solicitação
-                      </button>
-                    </div>
-                  </div>
+            {/* Modal para novas solicitações */}
+            <ModalSolicitacao
+              isOpen={modalAberto}
+              onClose={fecharModal}
+              tipoSolicitacao={tipoSolicitacao}
+              setTipoSolicitacao={setTipoSolicitacao}
+              tipoVitrine={tipoVitrine}
+              setTipoVitrine={setTipoVitrine}
+              nomeProduto={nomeProduto}
+              setNomeProduto={setNomeProduto}
+              valorProduto={valorProduto}
+              setValorProduto={setValorProduto}
+              descricaoProduto={descricaoProduto}
+              setDescricaoProduto={setDescricaoProduto}
+              telefoneContato={telefoneContato}
+              setTelefoneContato={setTelefoneContato}
+              titulo={titulo}
+              setTitulo={setTitulo}
+              conteudo={conteudo}
+              setConteudo={setConteudo}
+              reservaData={reservaData}
+              setReservaData={setReservaData}
+              onSubmit={enviarSolicitacao}
+            />
 
-                  <div className="mb-4">
-                    <label className="block text-gray-700 mb-2">Título</label>
-                    <input
-                      type="text"
-                      value={titulo}
-                      onChange={(e) => setTitulo(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(0,128,128)]"
-                      placeholder="Digite o título"
-                    />
-                  </div>
-
-                  <div className="mb-6">
-                    <label className="block text-gray-700 mb-2">Conteúdo</label>
-                    <textarea
-                      value={conteudo}
-                      onChange={(e) => setConteudo(e.target.value)}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(0,128,128)] h-32"
-                      placeholder="Descreva sua solicitação"
-                    />
-                  </div>
-
-                  <div className="flex justify-end space-x-3">
-                    <button
-                      onClick={fecharModal}
-                      className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                    >
-                      Cancelar
-                    </button>
-                    <button
-                      onClick={enviarSolicitacao}
-                      className="px-6 py-2 bg-[rgb(0,128,128)] text-white rounded-lg hover:bg-[rgba(0,128,128,0.9)]"
-                    >
-                      Enviar
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* esse modal eh para visualizar as solicitações */}
+            {/* Modal para visualizar solicitações */}
             {modalVisualizarAberto && solicitacaoSelecionada && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                 <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
                   <div className="flex justify-between items-center mb-4">
                     <h2 className="text-xl font-bold text-[rgb(0,128,128)]">Detalhes da Solicitação</h2>
-                    <button 
+                    <button
                       onClick={fecharModalVisualizar}
                       className="text-gray-500 hover:text-gray-700"
                     >
@@ -240,7 +202,7 @@ export function SolicitacaoMorador() {
               </div>
             )}
 
-            {/* aqui eh o historico de solicitacoes, porem so coloquei 3 como exemplo */}
+            {/* Histórico de solicitações */}
             <div className="bg-white rounded-xl shadow-sm overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -271,7 +233,7 @@ export function SolicitacaoMorador() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                          <button 
+                          <button
                             onClick={() => visualizarSolicitacao(solicitacao)}
                             className="text-[rgb(0,128,128)] hover:text-[rgba(0,128,128,0.8)] mr-3"
                           >
