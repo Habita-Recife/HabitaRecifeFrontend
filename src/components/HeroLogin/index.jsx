@@ -35,7 +35,7 @@ const HeroLogin = () => {
         } else if (userData.roles.includes('ROLE_MORADOR')) {
           navigate('/DashboardMorador');
         } else if (userData.roles.includes('ROLE_PREFEITURA')) {
-          navigate('/DashboardPrefeitura');
+          navigate('/DashboardAdmin');
         } else {
           navigate('/Dashboard');
         }

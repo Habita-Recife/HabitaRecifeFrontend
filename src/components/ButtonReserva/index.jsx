@@ -11,9 +11,7 @@ const ButtonReserva = () => {
 
   const handleReservaSubmit = (e) => {
     e.preventDefault();
-    console.log('Dados da reserva:', reservaData);
     setShowReservaModal(false);
-    // Aqui você pode adicionar lógica para salvar a reserva no backend
   };
 
   return (

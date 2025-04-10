@@ -27,11 +27,9 @@ const ComponentServicos = () => {
 
         if (condominio) {
           const condominioId = condominio.idCondominio;
-          console.log("Condomínio do morador logado:", condominio);
 
           listarSolicitacoes()
             .then((solicitacoesResponse) => {
-              console.log("Solicitações retornadas:", solicitacoesResponse.data);
 
               const vitrinesAprovadas = solicitacoesResponse.data
                 .filter(
@@ -40,8 +38,6 @@ const ComponentServicos = () => {
                     solicitacao.vitrine 
                 )
                 .map((solicitacao) => solicitacao.vitrine);
-
-              console.log("Vitrines aprovadas:", vitrinesAprovadas);
 
               const vitrineOrdenada = vitrinesAprovadas.sort(
                 (a, b) => b.id_vitrine - a.id_vitrine

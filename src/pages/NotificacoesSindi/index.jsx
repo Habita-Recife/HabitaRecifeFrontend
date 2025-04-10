@@ -85,7 +85,6 @@ export function NotificacoesSindi() {
               Notificações e Solicitações
             </h1>
 
-            {/* essa eh a parte das solicitacoes para responder, tudo estatico por enquanto */}
             <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Clock className="text-orange-500" />
@@ -124,13 +123,11 @@ export function NotificacoesSindi() {
               )}
             </div>
 
-            {/* o historico de respostas, tudo estatico por enquanto  como sempre*/}
             <div className="bg-white rounded-xl shadow-md p-6 border border-gray-100">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 flex items-center gap-2">
                 <Check className="text-green-500" />
                 Histórico de Respostas
               </h2>
-              {/* mermao n sei como vai ser quando conectar com o back */}
               {answeredRequests.length > 0 ? (
                 <div className="space-y-4">
                   {answeredRequests.map(request => (
@@ -171,7 +168,6 @@ export function NotificacoesSindi() {
             </div>
           </div>
 
-          {/* esse eh o modal de resposta minha gente*/}
           {showResponseModal && selectedRequest && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
               <div className="bg-white rounded-xl p-6 max-w-md w-full">

@@ -18,14 +18,13 @@ export function DashboardSindi() {
   const [showInadimplentesModal, setShowInadimplentesModal] = useState(false);
   const [showCadastrarMoradorModal, setShowCadastrarMoradorModal] = useState(false);
   const [showCadastrarPorteiroModal, setShowCadastrarPorteiroModal] = useState(false);
-  const [showSuccessMoradorModal, setShowSuccessMoradorModal] = useState(false);
-  const [showSuccessPorteiroModal, setShowSuccessPorteiroModal] = useState(false);
   const [atualizarListaPorteiros, setAtualizarListaPorteiros] = useState(false);
   const [atualizarListaMoradores, setAtualizarListaMoradores] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [moradores, setMoradores] = useState([]);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
+  const [modalAceitarRecusarAberto, setModalAceitarRecusarAberto] = useState(true);
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState(null);
   
   const [avisoData, setAvisoData] = useState({
@@ -129,14 +128,12 @@ export function DashboardSindi() {
 
   const handleAvisoSubmit = (e) => {
     e.preventDefault();
-    console.log("Aviso enviado:", avisoData);
     setShowAvisoModal(false);
     setAvisoData({ titulo: "", mensagem: "", urgente: false });
   };
 
   const handleReuniaoSubmit = (e) => {
     e.preventDefault();
-    console.log("Reunião agendada:", reuniaoData);
     setShowReuniaoModal(false);
     setReuniaoData({
       titulo: "",
@@ -180,6 +177,7 @@ export function DashboardSindi() {
             : solicitacao
         )
       );
+      setModalVisualizarAberto(false);
     } catch (error) {
       console.error("Erro ao aprovar solicitação:", error);
     }
@@ -195,6 +193,7 @@ export function DashboardSindi() {
             : solicitacao
         )
       );
+      setModalVisualizarAberto(false);
     } catch (error) {
       console.error("Erro ao recusar solicitação:", error);
     }
@@ -281,52 +280,9 @@ export function DashboardSindi() {
                   </div>
                 </div>
               </button>
-
-              {/* <button 
-                onClick={() => setShowInadimplentesModal(true)}
-                className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-4">
-                  <div className="bg-red-100 p-4 rounded-2xl group-hover:bg-red-200 transition-colors duration-300">
-                    <AlertCircle className="w-7 h-7 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium">Inadimplentes</p>
-                    <p className="text-lg font-bold text-gray-900">Ver moradores</p>
-                  </div>
-                </div>
-              </button> */}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              {/* <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-green-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-4">
-                  <div className="bg-green-100 p-4 rounded-2xl group-hover:bg-green-200 transition-colors duration-300">
-                    <CheckCircle className="w-7 h-7 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium">Moradores em dia</p>
-                    <p className="text-3xl font-bold text-gray-900">{pagamentos.emDia}%</p>
-                    <p className="text-xs text-gray-500">{pagamentos.total - Math.round(pagamentos.total * pagamentos.inadimplentes / 100)} moradores</p>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-br from-red-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative flex items-center gap-4">
-                  <div className="bg-red-100 p-4 rounded-2xl group-hover:bg-red-200 transition-colors duration-300">
-                    <XCircle className="w-7 h-7 text-red-600" />
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 font-medium">Inadimplentes</p>
-                    <p className="text-3xl font-bold text-gray-900">{pagamentos.inadimplentes}%</p>
-                    <p className="text-xs text-gray-500">{Math.round(pagamentos.total * pagamentos.inadimplentes / 100)} moradores</p>
-                  </div>
-                </div>
-              </div> */}
 
               <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -456,7 +412,7 @@ export function DashboardSindi() {
               </div>
             </div>
 
-            {solicitacaoSelecionada.status_solicitacao === "PENDENTE" && (
+            {modalAceitarRecusarAberto && solicitacaoSelecionada.status_solicitacao === "PENDENTE" && (
               <div className="mt-6 flex justify-between">
                 <button
                   onClick={() => handleRecusar(solicitacaoSelecionada.id_solicitacao)}

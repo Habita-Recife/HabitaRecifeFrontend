@@ -51,11 +51,9 @@ export function SolicitacaoMorador() {
           const morador = condominio.morador.find(m => m.emailMorador === emailMorador);
           if (morador) {
             setIdMorador(morador.idMorador);
-            console.log('ID do Morador:', morador.idMorador);
 
             if (condominio.sindico) {
               setIdSindico(condominio.sindico.id_sindico);
-              console.log('ID do Síndico:', condominio.sindico.id_sindico);
             }
 
             listarMoradores(accessToken)
@@ -63,7 +61,6 @@ export function SolicitacaoMorador() {
                 const moradorComSolicitacoes = response.data.find(m => m.idMorador === morador.idMorador);
                 if (moradorComSolicitacoes) {
                   setSolicitacoes(moradorComSolicitacoes.solicitacao || []);
-                  console.log('Solicitações carregadas:', moradorComSolicitacoes.solicitacao);
                 }
               })
               .catch((error) => {
@@ -115,17 +112,14 @@ export function SolicitacaoMorador() {
 
   const enviarSolicitacao = async () => {
     if (!tipoSolicitacao || !nomeProduto || !descricaoProduto) {
-      alert('Preencha todos os campos!');
       return;
     }
 
     if (!idSindico) {
-      alert('Erro: Não foi possível identificar o síndico associado.');
       return;
     }
 
     if (!idMorador) {
-      alert('Erro: Não foi possível identificar o morador logado.');
       return;
     }
 

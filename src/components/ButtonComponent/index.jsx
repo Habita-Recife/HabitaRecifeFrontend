@@ -27,7 +27,6 @@ const ButtonComponent = ({
         <span className="relative z-10 flex items-center justify-center">
           {text}
         </span>
-        {/* se nao tiver efeito de hover, nao sou eu kkk */}
         <span className="absolute inset-0 bg-white opacity-0 hover:opacity-10 rounded-lg transition-opacity duration-200"></span>
       </button>
     );

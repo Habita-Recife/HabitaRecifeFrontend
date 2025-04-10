@@ -132,7 +132,7 @@ export const router = createBrowserRouter([
     )
   },
   {
-    path: "/DashboardPrefeitura",
+    path: "/DashboardAdmin",
     element: (
       <PrivateRoute allowedRoles={['ROLE_PREFEITURA']}>
         <DashboardPrefeitura />
