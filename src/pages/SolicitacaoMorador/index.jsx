@@ -19,18 +19,20 @@ export function SolicitacaoMorador() {
   const [valorProduto, setValorProduto] = useState('');
   const [descricaoProduto, setDescricaoProduto] = useState('');
   const [telefoneContato, setTelefoneContato] = useState('');
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [erroMensagem, setErroMensagem] = useState('');
+
   const [reservaData, setReservaData] = useState({
     espaco: '',
-  data: '',
-  horario: '',
-  descricao: ''
-});
+    data: '',
+    horario: '',
+    descricao: ''
+  });
 
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [idSindico, setIdSindico] = useState(null);
   const [idMorador, setIdMorador] = useState(null);
-  
+
   useEffect(() => {
     const emailMorador = user?.sub;
 
@@ -56,17 +58,17 @@ export function SolicitacaoMorador() {
               console.log('ID do Síndico:', condominio.sindico.id_sindico);
             }
 
-            listarMoradores()
-  .then((response) => {
-    const moradorComSolicitacoes = response.data.find(m => m.idMorador === morador.idMorador);
-    if (moradorComSolicitacoes) {
-      setSolicitacoes(moradorComSolicitacoes.solicitacao || []);
-      console.log('Solicitações carregadas:', moradorComSolicitacoes.solicitacao);
-    }
-  })
-  .catch((error) => {
-    console.error('Erro ao buscar solicitações do morador:', error);
-  });
+            listarMoradores(accessToken)
+              .then((response) => {
+                const moradorComSolicitacoes = response.data.find(m => m.idMorador === morador.idMorador);
+                if (moradorComSolicitacoes) {
+                  setSolicitacoes(moradorComSolicitacoes.solicitacao || []);
+                  console.log('Solicitações carregadas:', moradorComSolicitacoes.solicitacao);
+                }
+              })
+              .catch((error) => {
+                console.error('Erro ao buscar solicitações do morador:', error);
+              });
           }
         } else {
           console.error('Erro: Não foi possível identificar o condomínio associado ao morador.');
@@ -145,9 +147,9 @@ export function SolicitacaoMorador() {
         };
 
         await enviarSolicitacaoVitrine(solicitacao, accessToken);
-        alert("Solicitação enviada com sucesso!");
         setSolicitacoes([solicitacao, ...solicitacoes]);
         fecharModal();
+        setShowSuccessModal(true);
       }
     } catch (error) {
       console.error("Erro ao enviar solicitação:", error);
@@ -260,7 +262,39 @@ export function SolicitacaoMorador() {
           </div>
         </main>
       </div>
-      
+
+      {showSuccessModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center shadow-xl">
+            <div className="mb-4">
+              <svg
+                className="w-16 h-16 text-green-500 mx-auto"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M9 12l2 2 4-4" />
+                <circle cx="12" cy="12" r="10" />
+              </svg>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2">Solicitação Enviada!</h3>
+            <p className="text-gray-600 mb-6">
+              Sua solicitação foi enviada com sucesso e está aguardando aprovação.
+            </p>
+            <button
+              onClick={() => setShowSuccessModal(false)}
+              className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+
       {erroMensagem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
