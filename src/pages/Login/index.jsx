@@ -1,13 +1,10 @@
-import { useNavigate } from "react-router"
+import FooterLogin from "../../components/FooterLogin"
+import HeroLogin from "../../components/HeroLogin"
 
-export function Login(){
-
-    const navegation = useNavigate()
-    return(
+export function Login() {
+    return (
         <>
-            <h1>Login teste!</h1>
-            <button onClick={()=> navegation("/")}>Voltar</button>
-        
+            <HeroLogin />
         </>
     )
 }
