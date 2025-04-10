@@ -1,6 +1,5 @@
 import { getDados } from '../../utils/utils';
 import { useState } from "react";
-import womanImage from "../../assets/Womanimage.png";
 import logo from "../../assets/logo04.png";
 import logoSemNome from "../../assets/logo06.png";
 import ModalForgot from "../ModalForgot";
@@ -8,12 +7,11 @@ import InputComponent from "../InputComponent";
 import ButtonComponent from "../ButtonComponent";
 import backgroundImage from "../../assets/BackgroundPaginaLogin.png";
 import ModalCadastro from "../ModalCadastro";
-import { loginUser } from "../../utils/api";
 import { useNavigate } from "react-router";
-
-
+import { useAuth } from "../../contexts/AuthContext";
 
 const HeroLogin = () => {
+  const { login } = useAuth();
   const [openModalForgot, setOpenModalForgot] = useState(false);
   const [openModalCadastro, setOpenModalCadastro] = useState(false);
   const [email, setEmail] = useState('');
@@ -25,12 +23,11 @@ const HeroLogin = () => {
     e.preventDefault();
 
     try {
-      const response = await loginUser(email, password);
+      const token = await login(email, password);
+      const userData = getDados(token);
 
-      if (response && response.token) {
-        const token = localStorage.getItem('token');
-        const userData = getDados(token);
 
+      if (token) {
         if (userData.roles.includes('ROLE_SINDICO')) {
           navigate('/DashboardSindi');
         } else if (userData.roles.includes('ROLE_PORTEIRO')) {

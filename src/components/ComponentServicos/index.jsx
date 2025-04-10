@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { listarCondominios, listarSolicitacoes } from "../../utils/api";
-import { getDados } from "../../utils/utils";
+import { useAuth } from "../../contexts/AuthContext";
 
 const ComponentServicos = () => {
+  const { user } = useAuth();
   const [vitrine, setVitrine] = useState([]);
 
   const capitalizeFirstLetter = (string) => {
@@ -11,8 +12,7 @@ const ComponentServicos = () => {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
-    const emailMorador = getDados(token)?.sub;
+    const emailMorador = user?.sub;
 
     if (!emailMorador) {
       console.error("Erro: E-mail do morador não encontrado no token.");

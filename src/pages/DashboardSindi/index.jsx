@@ -6,11 +6,11 @@ import InputCpf from "../../components/InputCpf";
 import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Clock, Eye, Edit } from "lucide-react";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
-import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes } from "../../utils/api";
-import { getDados } from "../../utils/utils";
-import { aprovarSolicitacao, recusarSolicitacao } from "../../utils/api";
+import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes, aprovarSolicitacao, recusarSolicitacao } from "../../utils/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function DashboardSindi() {
+  const { accessToken, user } = useAuth();
   const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showAvisoModal, setShowAvisoModal] = useState(false);
@@ -27,13 +27,13 @@ export function DashboardSindi() {
   const [moradores, setMoradores] = useState([]);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState(null);
-
+  
   const [avisoData, setAvisoData] = useState({
     titulo: "",
     mensagem: "",
     urgente: false
   });
-
+  
   const [reuniaoData, setReuniaoData] = useState({
     titulo: "",
     data: "",
@@ -61,13 +61,11 @@ export function DashboardSindi() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
     listarCondominios().then((response) => {
       const condominio = response.data.find(c =>
-        token && c.sindico != null && c.sindico.emailSindico === getDados(token).sub
+        accessToken && c.sindico != null && c.sindico.emailSindico === user.sub
       );
-
+  
       if (condominio) {
         setMoradorData((prev) => ({
           ...prev,
@@ -81,7 +79,7 @@ export function DashboardSindi() {
       }
     });
 
-    listarSolicitacoes().then((response) => {
+    listarSolicitacoes(accessToken).then((response) => {
       setSolicitacoes(response.data);
     });
 
@@ -151,30 +149,30 @@ export function DashboardSindi() {
 
   const handleMoradorSubmit = (e) => {
     e.preventDefault();
-
-    cadastrarMorador(moradorData).then((response) => {
+    
+    cadastrarMorador(moradorData, accessToken).then((response) => {
       setAtualizarListaMoradores((atualiza) => !atualiza);
       setShowCadastrarMoradorModal(false);
       setShowSuccessModal(true);
-      setMoradorData({ ...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "", bloco: 0, apartamento: 0 });
+      setMoradorData({...moradorData, nomeMorador: "", emailMorador: "", veiculoMorador: "", tipoMorador: "PROPRIETARIO", cpfMorador: "", bloco: 0, apartamento: 0 });
     });
-
+    
   };
 
   const handlePorteiroSubmit = (e) => {
     e.preventDefault();
 
-    cadastrarPorteiro(porteiroData).then((response) => {
+    cadastrarPorteiro(porteiroData, accessToken).then((response) => {
       setAtualizarListaPorteiros((atualiza) => !atualiza);
       setShowCadastrarPorteiroModal(false);
       setShowSuccessModal(true);
-      setPorteiroData({ ...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
+      setPorteiroData({...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
     });
   };
-
+  
   const handleAprovar = async (id) => {
     try {
-      await aprovarSolicitacao(id);
+      await aprovarSolicitacao(id, accessToken);
       setSolicitacoes((prev) =>
         prev.map((solicitacao) =>
           solicitacao.id_solicitacao === id
@@ -189,7 +187,7 @@ export function DashboardSindi() {
 
   const handleRecusar = async (id) => {
     try {
-      await recusarSolicitacao(id);
+      await recusarSolicitacao(id, accessToken);
       setSolicitacoes((prev) =>
         prev.map((solicitacao) =>
           solicitacao.id_solicitacao === id
@@ -205,7 +203,7 @@ export function DashboardSindi() {
   return (
     <div className="flex h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-200">
       <SidebarSindi />
-
+      
       <div className="flex-1 flex flex-col overflow-hidden">
         <HeaderSindi />
         <div className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
@@ -214,22 +212,22 @@ export function DashboardSindi() {
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
-                      Dashboard
-                    </h1>
+                  <h1 className="text-4xl sm:text-5xl font-bold text-[#008080]">
+                    Dashboard
+                  </h1>
                     <span className="text-sm text-white bg-gradient-to-r from-[#008080] to-[#006666] px-4 py-1.5 rounded-full shadow-md">
                       Painel de Controle
                     </span>
                   </div>
                   <div className="flex flex-wrap gap-3">
-                    <button
+                    <button 
                       onClick={() => setShowCadastrarMoradorModal(true)}
                       className="flex items-center gap-2 bg-[#008080] hover:bg-[#006666] text-white px-4 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                     >
                       <Users className="w-4 h-4" />
                       Cadastrar Morador
                     </button>
-                    <button
+                    <button 
                       onClick={() => setShowCadastrarPorteiroModal(true)}
                       className="flex items-center gap-2 bg-[#2C3E50] hover:bg-[#1a2633] text-white px-4 py-2.5 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl"
                     >
@@ -252,7 +250,7 @@ export function DashboardSindi() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
-              <button
+              <button 
                 onClick={() => setShowAvisoModal(true)}
                 className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden"
               >
@@ -268,7 +266,7 @@ export function DashboardSindi() {
                 </div>
               </button>
 
-              <button
+              <button 
                 onClick={() => setShowReuniaoModal(true)}
                 className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-gray-100 group relative overflow-hidden"
               >
@@ -368,7 +366,7 @@ export function DashboardSindi() {
                   Solicitações dos Moradores
                 </h2>
               </div>
-
+              
               <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
                   <thead className="bg-gray-50">
@@ -478,77 +476,76 @@ export function DashboardSindi() {
         </div>
       )}
 
-
       {
-        showAvisoModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 max-w-md w-full">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#2C3E50]">Novo Aviso</h3>
-                <button onClick={() => setShowAvisoModal(false)} className="text-gray-500 hover:text-gray-700">
-                  ✕
+      showAvisoModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-[#2C3E50]">Novo Aviso</h3>
+              <button onClick={() => setShowAvisoModal(false)} className="text-gray-500 hover:text-gray-700">
+                ✕
+              </button>
+            </div>
+            
+            <form onSubmit={handleAvisoSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Título</label>
+                <input
+                  type="text"
+                  value={avisoData.titulo}
+                  onChange={(e) => setAvisoData({...avisoData, titulo: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  placeholder="Digite o título do aviso"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">Mensagem</label>
+                <textarea
+                  value={avisoData.mensagem}
+                  onChange={(e) => setAvisoData({...avisoData, mensagem: e.target.value})}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] h-32"
+                  placeholder="Digite a mensagem"
+                  required
+                />
+              </div>
+              
+              <div className="mb-6 flex items-center">
+                <input
+                  type="checkbox"
+                  id="urgente"
+                  checked={avisoData.urgente}
+                  onChange={(e) => setAvisoData({...avisoData, urgente: e.target.checked})}
+                  className="w-4 h-4 text-[#008080] rounded focus:ring-[#008080] border-gray-300"
+                />
+                <label htmlFor="urgente" className="ml-2 text-sm text-gray-700">
+                  Aviso urgente
+                </label>
+              </div>
+              
+              <div className="flex justify-end space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowAvisoModal(false)}
+                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                >
+                  Enviar Aviso
                 </button>
               </div>
-
-              <form onSubmit={handleAvisoSubmit}>
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">Título</label>
-                  <input
-                    type="text"
-                    value={avisoData.titulo}
-                    onChange={(e) => setAvisoData({ ...avisoData, titulo: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                    placeholder="Digite o título do aviso"
-                    required
-                  />
-                </div>
-
-                <div className="mb-4">
-                  <label className="block text-gray-700 mb-2">Mensagem</label>
-                  <textarea
-                    value={avisoData.mensagem}
-                    onChange={(e) => setAvisoData({ ...avisoData, mensagem: e.target.value })}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] h-32"
-                    placeholder="Digite a mensagem"
-                    required
-                  />
-                </div>
-
-                <div className="mb-6 flex items-center">
-                  <input
-                    type="checkbox"
-                    id="urgente"
-                    checked={avisoData.urgente}
-                    onChange={(e) => setAvisoData({ ...avisoData, urgente: e.target.checked })}
-                    className="w-4 h-4 text-[#008080] rounded focus:ring-[#008080] border-gray-300"
-                  />
-                  <label htmlFor="urgente" className="ml-2 text-sm text-gray-700">
-                    Aviso urgente
-                  </label>
-                </div>
-
-                <div className="flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => setShowAvisoModal(false)}
-                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                  >
-                    Cancelar
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
-                  >
-                    Enviar Aviso
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
-        )
+        </div>
+      )
       }
 
-      {
+{
         showReuniaoModal && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl p-6 max-w-md w-full">
@@ -640,60 +637,60 @@ export function DashboardSindi() {
       }
 
       {
-        showInadimplentesModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl p-6 max-w-2xl w-full">
-              <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-[#2C3E50]">Moradores Inadimplentes</h3>
-                <button onClick={() => setShowInadimplentesModal(false)} className="text-gray-500 hover:text-gray-700">
-                  ✕
-                </button>
-              </div>
-
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Morador</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meses</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Devido</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+      showInadimplentesModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-2xl w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-[#2C3E50]">Moradores Inadimplentes</h3>
+              <button onClick={() => setShowInadimplentesModal(false)} className="text-gray-500 hover:text-gray-700">
+                ✕
+              </button>
+            </div>
+            
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Morador</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Meses</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valor Devido</th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {moradoresInadimplentes.map((morador, index) => (
+                    <tr key={index} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nome}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.meses}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">R$ {morador.valor.toFixed(2)}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button className="text-[#008080] hover:text-[#006666] mr-3">
+                          Notificar
+                        </button>
+                        <button className="text-gray-600 hover:text-gray-900">
+                          Histórico
+                        </button>
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody className="bg-white divide-y divide-gray-200">
-                    {moradoresInadimplentes.map((morador, index) => (
-                      <tr key={index} className="hover:bg-gray-50">
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nome}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.meses}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">R$ {morador.valor.toFixed(2)}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                          <button className="text-[#008080] hover:text-[#006666] mr-3">
-                            Notificar
-                          </button>
-                          <button className="text-gray-600 hover:text-gray-900">
-                            Histórico
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-
-              <div className="mt-6 flex justify-end">
-                <button
-                  onClick={() => setShowInadimplentesModal(false)}
-                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
-                >
-                  Fechar
-                </button>
-              </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            
+            <div className="mt-6 flex justify-end">
+              <button
+                onClick={() => setShowInadimplentesModal(false)}
+                className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+              >
+                Fechar
+              </button>
             </div>
           </div>
-        )
-      }
+        </div>
+      )
+    }
 
       {
         showCadastrarMoradorModal && (
@@ -892,6 +889,6 @@ export function DashboardSindi() {
           </div>
         )
       }
-    </div >
+    </div>
   );
 }

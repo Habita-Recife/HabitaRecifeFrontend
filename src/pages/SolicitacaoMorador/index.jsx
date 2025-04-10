@@ -4,9 +4,10 @@ import SidebarMorador from "../../components/SidebarMorador";
 import ModalSolicitacao from "../../components/ModalSolicitacao";
 import { Eye, X } from "lucide-react";
 import { listarCondominios, listarMoradores, enviarSolicitacaoVitrine } from "../../utils/api";
-import { getDados } from "../../utils/utils";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function SolicitacaoMorador() {
+  const { user, accessToken } = useAuth();
   const [modalAberto, setModalAberto] = useState(false);
   const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
   const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState(null);
@@ -21,18 +22,17 @@ export function SolicitacaoMorador() {
   const [erroMensagem, setErroMensagem] = useState('');
   const [reservaData, setReservaData] = useState({
     espaco: '',
-    data: '',
-    horario: '',
-    descricao: ''
-  });
+  data: '',
+  horario: '',
+  descricao: ''
+});
 
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [idSindico, setIdSindico] = useState(null);
   const [idMorador, setIdMorador] = useState(null);
-
+  
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const emailMorador = getDados(token)?.sub;
+    const emailMorador = user?.sub;
 
     if (!emailMorador) {
       console.error('Erro: E-mail do morador não encontrado no token.');
@@ -144,7 +144,7 @@ export function SolicitacaoMorador() {
           tipoVitrine
         };
 
-        await enviarSolicitacaoVitrine(solicitacao);
+        await enviarSolicitacaoVitrine(solicitacao, accessToken);
         alert("Solicitação enviada com sucesso!");
         setSolicitacoes([solicitacao, ...solicitacoes]);
         fecharModal();
@@ -260,7 +260,7 @@ export function SolicitacaoMorador() {
           </div>
         </main>
       </div>
-
+      
       {erroMensagem && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-xl">
