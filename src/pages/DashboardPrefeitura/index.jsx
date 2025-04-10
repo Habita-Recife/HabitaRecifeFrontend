@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import HeaderPrefeitura from "../../components/HeaderPrefeitura";
 import { Building, Users, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cadastrarCondominio, listarCondominios, editarCondominio, excluirCondominio, cadastrarSindico, listarSindicos, editarSindico, excluirSindico } from "../../utils/api";
@@ -8,17 +7,7 @@ import InputTelefone from "../../components/InputTelefone";
 import { useAuth } from "../../contexts/AuthContext";
 
 export function DashboardPrefeitura() {
-  const { accessToken, user } = useAuth();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (accessToken) {
-      if(user.roles[0] != 'ROLE_PREFEITURA') {
-        navigate('/login');
-      } 
-    } else {
-      navigate('/login');
-    }
-  }, []);
+  const { accessToken } = useAuth();
   
   const [showCadastrarCondominioModal, setShowCadastrarCondominioModal] = useState(false);
   const [showCadastrarSindicoModal, setShowCadastrarSindicoModal] = useState(false);
