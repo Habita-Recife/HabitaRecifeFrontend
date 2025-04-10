@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
 import { Edit, Trash2, Eye, Search, User, Mail, Car, Shield, AlertCircle, Users, Home, CheckCircle } from "lucide-react";
 import { listarMoradores, editarMorador, excluirMorador } from "../../utils/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function ListaDeMoradoresSindi(props) {
+  const { accessToken } = useAuth();
   const [moradores, setMoradores] = useState([]);
-
   const [searchCpf, setSearchCpf] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(null);
@@ -22,7 +23,7 @@ export default function ListaDeMoradoresSindi(props) {
   useEffect(() => {
     const fetchMoradores = async () => {
       try {
-        const response = await listarMoradores();
+        const response = await listarMoradores(accessToken);
         setMoradores(response.data);
         if (props.onChangeMoradores) {
           props.onChangeMoradores(response.data); 
@@ -40,7 +41,7 @@ export default function ListaDeMoradoresSindi(props) {
   );
 
   const handleDelete = (idMorador) => {
-    excluirMorador(idMorador).then((response) => {
+    excluirMorador(idMorador, accessToken).then((response) => {
       setMoradores(moradores.filter(morador => morador.idMorador !== idMorador));
       setShowDeleteConfirm(null);
     }); 
@@ -72,7 +73,7 @@ export default function ListaDeMoradoresSindi(props) {
         moradorEditado = {...moradorData, idMorador: editingMorador.idMorador};
       } 
     });
-    editarMorador(editingMorador.idMorador, moradorEditado).then((response) => {
+    editarMorador(editingMorador.idMorador, moradorEditado, accessToken).then((response) => {
       setMoradores(moradores.map(m => 
         m.idMorador === editingMorador.idMorador ? { ...moradorData, idMorador: editingMorador.idMorador, inadimplente: m.inadimplente } : m
       ));

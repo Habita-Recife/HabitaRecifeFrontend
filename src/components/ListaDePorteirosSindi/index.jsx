@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { Edit, Trash2, Eye, Search, User, Mail, Shield, AlertCircle, Users, CheckCircle } from "lucide-react";
 import { listarPorteiros, editarPorteiro, excluirPorteiro } from "../../utils/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function ListaDePorteirosSindi(props) {
+  const { accessToken } = useAuth();
   const [porteiros, setPorteiros] = useState([]);
   const [searchCpf, setSearchCpf] = useState("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(null);
@@ -19,7 +21,7 @@ export default function ListaDePorteirosSindi(props) {
   useEffect(() => {
     const fetchPorteiros = async () => {
       try {
-        const response = await listarPorteiros();
+        const response = await listarPorteiros(accessToken);
         setPorteiros(response.data);
       } catch (error) {
         console.error("Erro ao buscar porteiros:", error);
@@ -34,7 +36,7 @@ export default function ListaDePorteirosSindi(props) {
   );
 
   const handleDelete = (idPorteiro) => {
-    excluirPorteiro(idPorteiro).then((response) => {
+    excluirPorteiro(idPorteiro, accessToken).then((response) => {
       setPorteiros(porteiros.filter(porteiro => porteiro.idPorteiro !== idPorteiro));
       setShowDeleteConfirm(null);
     }); 
@@ -59,7 +61,7 @@ export default function ListaDePorteirosSindi(props) {
       } 
     });
 
-    editarPorteiro(editingPorteiro.idPorteiro, porteiroEditado).then((response) => {
+    editarPorteiro(editingPorteiro.idPorteiro, porteiroEditado, accessToken).then((response) => {
       setPorteiros(porteiros.map(p => 
         p.idPorteiro === editingPorteiro.idPorteiro ? { ...porteiroData, idPorteiro: editingPorteiro.idPorteiro } : p
       ));

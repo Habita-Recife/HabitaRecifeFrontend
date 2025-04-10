@@ -1,24 +1,7 @@
 import axios from "axios";
-import { getDados } from '../utils/utils';
+import { useAuth } from "../contexts/AuthContext";
 
 const API_URL = 'http://localhost:8080';
-
-/**
- * Login
- */
-export function loginUser(email, password) {
-    
-    return axios.post(`${API_URL}/v1/users/login`, {
-        email,
-        password
-    }).then((response) => {
-        if (response.data.token) {
-            localStorage.setItem('token', response.data.token);
-            localStorage.setItem('username', response.data.username);
-        }
-        return response.data;
-    });
-}
 
 /**
  * Condomínio
@@ -42,8 +25,7 @@ export function excluirCondominio(idCondominio) {
 /**
  * Condomínio
  */
-export function cadastrarSindico(sindico) {
-    const token = localStorage.getItem('token');
+export function cadastrarSindico(sindico, token) {
     return axios.post(`${API_URL}/v1/sindico`, sindico, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -51,8 +33,7 @@ export function cadastrarSindico(sindico) {
     });
 }
 
-export function listarSindicos() {
-    const token = localStorage.getItem('token');
+export function listarSindicos(token) {
     return axios.get(`${API_URL}/v1/sindico`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -60,8 +41,7 @@ export function listarSindicos() {
     });
 }
 
-export function editarSindico(idSindico, sindico) {
-    const token = localStorage.getItem('token');
+export function editarSindico(idSindico, sindico, token) {
     return axios.put(`${API_URL}/v1/sindico/${idSindico}`, sindico, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -69,8 +49,7 @@ export function editarSindico(idSindico, sindico) {
     });
 }
 
-export function excluirSindico(idSindico) {
-    const token = localStorage.getItem('token');
+export function excluirSindico(idSindico, token) {
     return axios.delete(`${API_URL}/v1/sindico/${idSindico}`,  {
         headers: {
             Authorization: `Bearer ${token}`
@@ -81,8 +60,7 @@ export function excluirSindico(idSindico) {
 /**
  * Visitante
  */
-export function cadastrarVisitante(visitante) {
-    const token = localStorage.getItem('token');
+export function cadastrarVisitante(visitante, token) {
     return axios.post(`${API_URL}/v1/visitante`, visitante, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -90,8 +68,7 @@ export function cadastrarVisitante(visitante) {
     });
 }
 
-export function listarVisitantes() {
-    const token = localStorage.getItem('token');
+export function listarVisitantes(token) {
     return axios.get(`${API_URL}/v1/visitante`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -99,8 +76,7 @@ export function listarVisitantes() {
     });
 }
 
-export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
-    const token = localStorage.getItem('token');
+export const registrarSaidaVisitante = (idVisitante, idPorteiro, token) => {
     const fluxoDTO = {
       idPorteiro: idPorteiro,
       idVisitante: idVisitante,
@@ -118,8 +94,7 @@ export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
  * Porteiro
  */
 
-  export const obterDadosPorteiroLogado = () => {
-    const token = localStorage.getItem('token');
+  export const obterDadosPorteiroLogado = (token) => {
     return axios.get(`${API_URL}/v1/porteiro/logado`, {
       headers: {
         Authorization: `Bearer ${token}`
@@ -130,8 +105,7 @@ export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
 /**
  * Morador
  */
-export function cadastrarMorador(morador) {
-    const token = localStorage.getItem('token');
+export function cadastrarMorador(morador, token) {
     return axios.post(`${API_URL}/v1/morador`, morador, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -139,8 +113,7 @@ export function cadastrarMorador(morador) {
     });
 }
 
-export function listarMoradores() {
-    const token = localStorage.getItem('token');
+export function listarMoradores(token) {
     return axios.get(`${API_URL}/v1/morador`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -148,8 +121,7 @@ export function listarMoradores() {
     });
 }
 
-export function editarMorador(idMorador, morador) {
-    const token = localStorage.getItem('token');
+export function editarMorador(idMorador, morador, token) {
     return axios.put(`${API_URL}/v1/morador/${idMorador}`, morador, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -157,8 +129,7 @@ export function editarMorador(idMorador, morador) {
     });
 }
 
-export function excluirMorador(idMorador) {
-    const token = localStorage.getItem('token');
+export function excluirMorador(idMorador, token) {
     return axios.delete(`${API_URL}/v1/morador/${idMorador}`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -184,8 +155,7 @@ export function resetPassword(token, newPassword, confirmPassword) {
 /**
  * Porteiro
  */
-export function cadastrarPorteiro(porteiro) {
-    const token = localStorage.getItem('token');
+export function cadastrarPorteiro(porteiro, token) {
     return axios.post(`${API_URL}/v1/porteiro`, porteiro, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -193,8 +163,7 @@ export function cadastrarPorteiro(porteiro) {
     });
 }
 
-export function listarPorteiros() {
-    const token = localStorage.getItem('token');
+export function listarPorteiros(token) {
     return axios.get(`${API_URL}/v1/porteiro`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -202,8 +171,7 @@ export function listarPorteiros() {
     });
 }
 
-export function editarPorteiro(idPorteiro, porteiro) {
-    const token = localStorage.getItem('token');
+export function editarPorteiro(idPorteiro, porteiro, token) {
     return axios.put(`${API_URL}/v1/porteiro/${idPorteiro}`, porteiro, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -211,8 +179,7 @@ export function editarPorteiro(idPorteiro, porteiro) {
     });
 }
 
-export function excluirPorteiro(idPorteiro) {
-    const token = localStorage.getItem('token');
+export function excluirPorteiro(idPorteiro, token) {
     return axios.delete(`${API_URL}/v1/porteiro/${idPorteiro}`, {
         headers: {
             Authorization: `Bearer ${token}`
@@ -223,62 +190,99 @@ export function excluirPorteiro(idPorteiro) {
 /**
  * Solicitações
  */
-export function listarSolicitacoes() {
+export function listarSolicitacoes(token) {
     return axios.get(`${API_URL}/v1/solicitacao`);
 }
 
-export function listarVisitantesPorMorador(idMorador) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorMorador(idMorador, token) {
     return axios.get(`${API_URL}/v1/visitante/morador/${idMorador}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorPorteiro(idPorteiro) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorPorteiro(idPorteiro, token) {
     return axios.get(`${API_URL}/v1/visitante/porteiro/${idPorteiro}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorPorteiroAtivo(idPorteiro) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorPorteiroAtivo(idPorteiro, token) {
     return axios.get(`${API_URL}/v1/visitante/porteiro/ativo/${idPorteiro}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorMoradorAtivo(idMorador) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorMoradorAtivo(idMorador, token) {
     return axios.get(`${API_URL}/v1/visitante/morador/ativo/${idMorador}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorPorteiroInativo(idPorteiro) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorPorteiroInativo(idPorteiro, token) {
     return axios.get(`${API_URL}/v1/visitante/porteiro/inativo/${idPorteiro}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorMoradorInativo(idMorador) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorMoradorInativo(idMorador, token) {
     return axios.get(`${API_URL}/v1/visitante/morador/inativo/${idMorador}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     });
 }
-export function listarVisitantesPorPorteiroAtivoPorMorador(idPorteiro, idMorador) {
-    const token = localStorage.getItem('token');
+export function listarVisitantesPorPorteiroAtivoPorMorador(idPorteiro, idMorador, token) {
     return axios.get(`${API_URL}/v1/visitante/porteiro/ativo/morador/${idPorteiro}/${idMorador}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
-    });}
+});
+}
+
+export function enviarSolicitacaoVitrine(solicitacao, token) {
+    return axios.post(`${API_URL}/v1/solicitacao`, solicitacao, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function aprovarSolicitacao(id, token) {
+    return axios.put(`${API_URL}/v1/solicitacao/${id}/aprovar`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function recusarSolicitacao(id, token) {
+    return axios.put(`${API_URL}/v1/solicitacao/${id}/recusar`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function listarVitrine(token) {
+    return axios.get(`${API_URL}/v1/vitrine`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+/**
+ * Vitrine por Condomínio
+ */
+export function listarVitrinePorCondominio(idCondominio, token) {
+    return axios.get(`${API_URL}/v1/vitrine/condominio/${idCondominio}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
