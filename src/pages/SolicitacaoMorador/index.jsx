@@ -57,16 +57,16 @@ export function SolicitacaoMorador() {
             }
 
             listarMoradores()
-              .then((response) => {
-                const moradorComSolicitacoes = response.data.find(m => m.idMorador === morador.idMorador);
-                if (moradorComSolicitacoes) {
-                  setSolicitacoes(moradorComSolicitacoes.solicitacao || []);
-                  console.log('Solicitações carregadas:', moradorComSolicitacoes.solicitacao);
-                }
-              })
-              .catch((error) => {
-                console.error('Erro ao buscar solicitações do morador:', error);
-              });
+  .then((response) => {
+    const moradorComSolicitacoes = response.data.find(m => m.idMorador === morador.idMorador);
+    if (moradorComSolicitacoes) {
+      setSolicitacoes(moradorComSolicitacoes.solicitacao || []);
+      console.log('Solicitações carregadas:', moradorComSolicitacoes.solicitacao);
+    }
+  })
+  .catch((error) => {
+    console.error('Erro ao buscar solicitações do morador:', error);
+  });
           }
         } else {
           console.error('Erro: Não foi possível identificar o condomínio associado ao morador.');
@@ -310,13 +310,6 @@ export function SolicitacaoMorador() {
               <p><strong>Data de Criação:</strong> {solicitacaoSelecionada.dataCriacao
                 ? new Date(solicitacaoSelecionada.dataCriacao).toLocaleDateString("pt-BR")
                 : "Sem data"}</p>
-              {solicitacaoSelecionada.vitrine && (
-                <>
-                  <p><strong>Produto/Serviço:</strong> {solicitacaoSelecionada.vitrine.nomeProduto}</p>
-                  <p><strong>Descrição:</strong> {solicitacaoSelecionada.vitrine.descricaoProduto}</p>
-                  <p><strong>Valor:</strong> R$ {parseFloat(solicitacaoSelecionada.vitrine.valorProduto).toFixed(2)}</p>
-                </>
-              )}
             </div>
             <div className="flex justify-end mt-4">
               <button

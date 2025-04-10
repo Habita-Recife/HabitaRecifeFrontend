@@ -319,3 +319,15 @@ export function listarVitrine() {
         }
     });
 }
+
+/**
+ * Vitrine por Condomínio
+ */
+export function listarVitrinePorCondominio(idCondominio) {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/vitrine/condominio/${idCondominio}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}

@@ -20,6 +20,7 @@ const SidebarMorador = () => {
         navigate("/ControleMorador");
         break;
       case "Serviços":
+      case "Vitrine":
         navigate("/ServicoMorador");
         break;
       default:

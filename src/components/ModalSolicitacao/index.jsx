@@ -1,6 +1,15 @@
 import React from 'react';
 import ButtonReserva from '../ButtonReserva';
 
+const formatPhoneNumber = (value) => {
+  if (!value) return "";
+  return value
+    .replace(/\D/g, "")
+    .replace(/^(\d{2})(\d)/, "($1) $2")
+    .replace(/(\d{5})(\d)/, "$1-$2")
+    .slice(0, 15);
+};
+
 const ModalSolicitacao = ({
   isOpen,
   onClose,
@@ -40,8 +49,8 @@ const ModalSolicitacao = ({
             <button
               onClick={() => setTipoSolicitacao('POSTAGEM_VITRINE')}
               className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'POSTAGEM_VITRINE'
-                  ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
-                  : 'border-gray-300'
+                ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
+                : 'border-gray-300'
                 }`}
             >
               Vitrine
@@ -50,14 +59,16 @@ const ModalSolicitacao = ({
             <button
               onClick={() => setTipoSolicitacao('Aviso')}
               className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'Aviso'
-                  ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
-                  : 'border-gray-300'
+                ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
+                : 'border-gray-300'
                 }`}
             >
               Aviso
             </button>
           </div>
         </div>
+
+
 
         {/* Formulário para Vitrine */}
         {tipoSolicitacao === 'POSTAGEM_VITRINE' && (
@@ -68,8 +79,8 @@ const ModalSolicitacao = ({
                 <button
                   onClick={() => setTipoVitrine('SERVICO')}
                   className={`py-2 px-4 rounded-lg border ${tipoVitrine === 'SERVICO'
-                      ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
-                      : 'border-gray-300'
+                    ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
+                    : 'border-gray-300'
                     }`}
                 >
                   Serviço
@@ -77,8 +88,8 @@ const ModalSolicitacao = ({
                 <button
                   onClick={() => setTipoVitrine('PRODUTO')}
                   className={`py-2 px-4 rounded-lg border ${tipoVitrine === 'PRODUTO'
-                      ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
-                      : 'border-gray-300'
+                    ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
+                    : 'border-gray-300'
                     }`}
                 >
                   Produto
@@ -108,12 +119,14 @@ const ModalSolicitacao = ({
               />
             </div>
 
+
+
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">Telefone de Contato</label>
               <input
                 type="tel"
                 value={telefoneContato || ''}
-                onChange={(e) => setTelefoneContato(e.target.value)}
+                onChange={(e) => setTelefoneContato(formatPhoneNumber(e.target.value))}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(0,128,128)]"
                 placeholder="Digite o telefone de contato"
               />
