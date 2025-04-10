@@ -3,25 +3,21 @@ import { useNavigate } from "react-router-dom";
 import HeaderPrefeitura from "../../components/HeaderPrefeitura";
 import { Building, Users, Edit, Trash2, CheckCircle } from "lucide-react";
 import { cadastrarCondominio, listarCondominios, editarCondominio, excluirCondominio, cadastrarSindico, listarSindicos, editarSindico, excluirSindico } from "../../utils/api";
-import { getDados } from "../../utils/utils";
 import InputRG from "../../components/InputRG";
 import InputTelefone from "../../components/InputTelefone";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function DashboardPrefeitura() {
+  const { accessToken, user } = useAuth();
   const navigate = useNavigate();
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
-    if (token) {
-      const dadosUsuario = getDados(token);
-
-      if(dadosUsuario.roles[0] != 'ROLE_PREFEITURA') {
+    if (accessToken) {
+      if(user.roles[0] != 'ROLE_PREFEITURA') {
         navigate('/login');
       } 
     } else {
       navigate('/login');
     }
-    
   }, []);
   
   const [showCadastrarCondominioModal, setShowCadastrarCondominioModal] = useState(false);
@@ -55,7 +51,7 @@ export function DashboardPrefeitura() {
   }, []);
 
   useEffect(() => {
-    listarSindicos().then((response) => {
+    listarSindicos(accessToken).then((response) => {
       setSindicos(response.data);
     });
   }, []);
@@ -110,7 +106,7 @@ export function DashboardPrefeitura() {
           sindicoEditado = {...sindicoData, id_sindico: editingSindico.id_sindico};
         } 
       });
-      editarSindico(editingSindico.id_sindico, sindicoEditado).then((response) => {
+      editarSindico(editingSindico.id_sindico, sindicoEditado, accessToken).then((response) => {
         setShowSuccessModal(true);
         setSindicos(sindicos.map(s => 
           s.id_sindico === editingSindico.id_sindico ? {...sindicoData, id_sindico: editingSindico.id_sindico} : s
@@ -118,7 +114,7 @@ export function DashboardPrefeitura() {
       }); 
       
     } else {
-      cadastrarSindico(sindicoData).then((response) => {
+      cadastrarSindico(sindicoData, accessToken).then((response) => {
         const newSindico = {
           ...sindicoData,
           id_sindico: response.data.id_sindico
@@ -171,7 +167,7 @@ export function DashboardPrefeitura() {
   };
 
   const handleDeleteSindico = (id_sindico) => {
-    excluirSindico(id_sindico).then((response) => {
+    excluirSindico(id_sindico, accessToken).then((response) => {
       setSindicos(sindicos.filter(s => s.id_sindico !== id_sindico));
     }); 
   };

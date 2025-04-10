@@ -3,12 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import HeaderPorteiro from "../../components/HeaderPorteiro";
 import { Package, UserPlus, CheckCircle } from 'lucide-react';
 import { listarPorteiros, cadastrarVisitante, listarVisitantes, registrarSaidaVisitante } from '../../utils/api';
-import { getDados } from '../../utils/utils';
 import InputCpf from "../../components/InputCpf";
 import InputTelefone from '../../components/InputTelefone';
+import { useAuth } from "../../contexts/AuthContext";
 
 export function DashboardPorteiro() {
-
+  const { accessToken, user } = useAuth();
   const navigate = useNavigate();
 
   const [porteiro, setPorteiro] = useState({});
@@ -20,17 +20,14 @@ export function DashboardPorteiro() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    if (accessToken) {
 
-    if (token) {
-      const dadosUsuario = getDados(token);
-
-      if (dadosUsuario.roles[0] !== 'ROLE_PORTEIRO') {
+      if (user.roles[0] !== 'ROLE_PORTEIRO') {
         navigate('/login');
       } else {
-        listarPorteiros().then((response) => {
+        listarPorteiros(accessToken).then((response) => {
           const porteiroLogado = response.data.find(c =>
-            c.emailPorteiro === getDados(token).sub
+            c.emailPorteiro === user.sub
           );
           
           if (porteiroLogado) {
@@ -38,7 +35,7 @@ export function DashboardPorteiro() {
           }
         });
 
-        listarVisitantes().then((response) => {
+        listarVisitantes(accessToken).then((response) => {
 
           setVisitantes(response.data);
           setIsLoading(false);
@@ -105,9 +102,9 @@ export function DashboardPorteiro() {
 
   const handleSubmitVisitante = (e) => {
     e.preventDefault();
-    cadastrarVisitante(novoVisitante)
+    cadastrarVisitante(novoVisitante, accessToken)
       .then(response => {
-        listarVisitantes().then((response) => {
+        listarVisitantes(accessToken).then((response) => {
           setVisitantes(response.data);
         });
 
@@ -133,9 +130,9 @@ export function DashboardPorteiro() {
       return;
     }
 
-    registrarSaidaVisitante(idVisitante, porteiro.idPorteiro)
+    registrarSaidaVisitante(idVisitante, porteiro.idPorteiro, accessToken)
       .then(response => {
-        return listarVisitantes();
+        return listarVisitantes(accessToken);
       })
       .then(response => {
         setVisitantes(response.data);

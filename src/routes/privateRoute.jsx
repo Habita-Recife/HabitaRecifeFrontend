@@ -1,21 +1,14 @@
-import React from 'react';
-import { Navigate } from 'react-router-dom';
-import { getDados } from '../utils/utils'; 
+import { useAuth } from "../contexts/AuthContext";
+import { Navigate } from "react-router-dom";
 
-function PrivateRoute({ children, allowedRoles }) {
-  const token = localStorage.getItem('token');
-  const userData = getDados(token);
-  const userRoles = userData ? userData.roles : [];
+const PrivateRoute = ({ children, allowedRoles }) => {
+  const { user } = useAuth();
 
-  if (!token) {
-    return <Navigate to="/login" />;
-  }
+  if (!user) return <Navigate to="/login" />;
 
-  if (allowedRoles && !allowedRoles.some(role => userRoles.includes(role))) {
-    return <Navigate to="/acesso-negado" />;
-  }
+  const hasPermission = allowedRoles.some(role => user?.roles?.includes(role));
 
-  return children;
-}
+  return hasPermission ? children : <Navigate to="/login" />;
+};
 
 export default PrivateRoute;

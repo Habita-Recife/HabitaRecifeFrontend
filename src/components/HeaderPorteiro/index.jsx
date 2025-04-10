@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { LogOut, Lock, ChevronDown } from "lucide-react";
 import logo from "../../assets/logo05.png";
 import { converterRoles, getDados } from '../../utils/utils';
+import { useAuth } from "../../contexts/AuthContext";
 
 const HeaderPorteiro = () => {
-  const token = localStorage.getItem('token');
+  const { user, logOut } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
@@ -28,8 +29,7 @@ const HeaderPorteiro = () => {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('username');
+    logOut();
     navigate("/login");
   };
 
@@ -51,14 +51,14 @@ const HeaderPorteiro = () => {
         ref={dropdownRef}
       >
         <div className="w-12 h-12 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold text-xl group-hover:bg-white group-hover:text-[#008080] transition-colors duration-300 shadow-md">
-          {localStorage.getItem('username')?.charAt(0).toUpperCase() || ''}
+          {user.username?.charAt(0).toUpperCase() || ''}
         </div>
         <div className="flex flex-col">
           <span className="text-white font-bold group-hover:text-[#008080] transition-colors duration-300">
-            {localStorage.getItem('username')?.toUpperCase() || ''}
+            {user.username?.toUpperCase() || ''}
           </span>
           <span className="text-gray-300 text-sm group-hover:text-white transition-colors duration-300">
-            {converterRoles(getDados(token)?.roles?.[0] || '')}
+            {converterRoles(user?.roles?.[0] || '')}
           </span>
         </div>
         <ChevronDown 
@@ -73,11 +73,11 @@ const HeaderPorteiro = () => {
             <div className="p-4 border-b border-gray-200">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-[#008080] flex items-center justify-center text-white font-bold">
-                  {localStorage.getItem('username')?.charAt(0).toUpperCase() || ''}
+                  {user.username?.charAt(0).toUpperCase() || ''}
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-800">{localStorage.getItem('username')?.toUpperCase() || ''}</p>
-                  <p className="text-sm text-gray-500">{getDados(token)?.sub || ''}</p>
+                  <p className="font-semibold text-gray-800">{user.username?.toUpperCase() || ''}</p>
+                  <p className="text-sm text-gray-500">{user?.sub || ''}</p>
                 </div>
               </div>
             </div>

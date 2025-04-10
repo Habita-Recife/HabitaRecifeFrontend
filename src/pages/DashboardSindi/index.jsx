@@ -6,10 +6,11 @@ import InputCpf from "../../components/InputCpf";
 import { Calendar, FileText, Users, MessageSquare, AlertCircle, CheckCircle, XCircle, Clock, Eye, Edit } from "lucide-react";
 import ListaDeMoradoresSindi from "../../components/ListaDeMoradoresSindi";
 import ListaDePorteirosSindi from "../../components/ListaDePorteirosSindi";
-import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes } from "../../utils/api";
-import { getDados } from "../../utils/utils";
+import { cadastrarMorador, cadastrarPorteiro, listarCondominios, listarSolicitacoes, aprovarSolicitacao, recusarSolicitacao } from "../../utils/api";
+import { useAuth } from "../../contexts/AuthContext";
 
 export function DashboardSindi() {
+  const { accessToken, user } = useAuth();
   const navigate = useNavigate();
   const [currentDateTime, setCurrentDateTime] = useState(new Date());
   const [showAvisoModal, setShowAvisoModal] = useState(false);
@@ -24,6 +25,8 @@ export function DashboardSindi() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [solicitacoes, setSolicitacoes] = useState([]);
   const [moradores, setMoradores] = useState([]);
+  const [modalVisualizarAberto, setModalVisualizarAberto] = useState(false);
+  const [solicitacaoSelecionada, setSolicitacaoSelecionada] = useState(null);
   
   const [avisoData, setAvisoData] = useState({
     titulo: "",
@@ -58,11 +61,9 @@ export function DashboardSindi() {
   });
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-
     listarCondominios().then((response) => {
       const condominio = response.data.find(c =>
-        token && c.sindico != null && c.sindico.emailSindico === getDados(token).sub
+        accessToken && c.sindico != null && c.sindico.emailSindico === user.sub
       );
   
       if (condominio) {
@@ -78,7 +79,7 @@ export function DashboardSindi() {
       }
     });
 
-    listarSolicitacoes().then((response) => {
+    listarSolicitacoes(accessToken).then((response) => {
       setSolicitacoes(response.data);
     });
 
@@ -104,6 +105,15 @@ export function DashboardSindi() {
     });
   };
 
+  const abrirModalVisualizar = (solicitacao) => {
+    setSolicitacaoSelecionada(solicitacao);
+    setModalVisualizarAberto(true);
+  };
+
+  const fecharModalVisualizar = () => {
+    setSolicitacaoSelecionada(null);
+    setModalVisualizarAberto(false);
+  };
 
   const pagamentos = {
     emDia: 85,
@@ -140,7 +150,7 @@ export function DashboardSindi() {
   const handleMoradorSubmit = (e) => {
     e.preventDefault();
     
-    cadastrarMorador(moradorData).then((response) => {
+    cadastrarMorador(moradorData, accessToken).then((response) => {
       setAtualizarListaMoradores((atualiza) => !atualiza);
       setShowCadastrarMoradorModal(false);
       setShowSuccessModal(true);
@@ -152,12 +162,42 @@ export function DashboardSindi() {
   const handlePorteiroSubmit = (e) => {
     e.preventDefault();
 
-    cadastrarPorteiro(porteiroData).then((response) => {
+    cadastrarPorteiro(porteiroData, accessToken).then((response) => {
       setAtualizarListaPorteiros((atualiza) => !atualiza);
       setShowCadastrarPorteiroModal(false);
       setShowSuccessModal(true);
       setPorteiroData({...porteiroData, nomePorteiro: "", emailPorteiro: "", cpfPorteiro: "" });
     });
+  };
+  
+  const handleAprovar = async (id) => {
+    try {
+      await aprovarSolicitacao(id, accessToken);
+      setSolicitacoes((prev) =>
+        prev.map((solicitacao) =>
+          solicitacao.id_solicitacao === id
+            ? { ...solicitacao, status_solicitacao: "APROVADO" }
+            : solicitacao
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao aprovar solicitação:", error);
+    }
+  };
+
+  const handleRecusar = async (id) => {
+    try {
+      await recusarSolicitacao(id, accessToken);
+      setSolicitacoes((prev) =>
+        prev.map((solicitacao) =>
+          solicitacao.id_solicitacao === id
+            ? { ...solicitacao, status_solicitacao: "RECUSADO" }
+            : solicitacao
+        )
+      );
+    } catch (error) {
+      console.error("Erro ao recusar solicitação:", error);
+    }
   };
 
   return (
@@ -332,7 +372,6 @@ export function DashboardSindi() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Conteúdo</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
@@ -342,31 +381,27 @@ export function DashboardSindi() {
                     {solicitacoes.map((solicitacao) => (
                       <tr key={solicitacao.id_solicitacao} className="hover:bg-gray-50">
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{solicitacao.titulo}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.conteudo}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.tipo_solicitacao}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{solicitacao.conteudo || "Sem tipo"}</td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                            solicitacao.status_solicitacao === 'PENDENTE' ? 'bg-yellow-100 text-yellow-800' :
-                            solicitacao.status_solicitacao === 'ATIVO' ? 'bg-green-100 text-green-800':
-                            'bg-red-100 text-red-800'
-                          }`}>
-                            {solicitacao.status_solicitacao === 'PENDENTE' ? 'Pendente' : 
-                             solicitacao.status_solicitacao === 'ATIVO' ? 'Ativo' : 'Resolvido'}
+                          <span
+                            className={`px-2 py-1 text-xs font-medium rounded-full ${solicitacao.status_solicitacao === "PENDENTE"
+                              ? "bg-yellow-100 text-yellow-800"
+                              : solicitacao.status_solicitacao === "APROVADO"
+                                ? "bg-green-100 text-green-800"
+                                : "bg-red-100 text-red-800"
+                              }`}
+                          >
+                            {solicitacao.status_solicitacao || "Sem status"}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                        <button 
-                          className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
-                          title="Ver detalhes"
-                        >
-                          <Eye className="w-4 h-4 inline" />
-                        </button>
-                        <button 
-                          className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
-                          title="Editar"
-                        >
-                          <Edit className="w-4 h-4 inline" />
-                        </button>
+                          <button
+                            onClick={() => abrirModalVisualizar(solicitacao)}
+                            className="text-[#2C3E50] hover:text-[#1a2633] flex items-center gap-1"
+                            title="Ver detalhes"
+                          >
+                            <Eye className="w-4 h-4" /> Ver
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -378,7 +413,71 @@ export function DashboardSindi() {
         </div>
       </div>
 
-      {showAvisoModal && (
+      {modalVisualizarAberto && solicitacaoSelecionada && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-gray-800">Análise de Solicitação</h3>
+              <button
+                onClick={fecharModalVisualizar}
+                className="text-gray-500 hover:text-gray-700"
+              >
+                ✕
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-700 font-medium">Título:</p>
+                <p className="text-gray-600">{solicitacaoSelecionada.titulo || "Sem título"}</p>
+              </div>
+              <div>
+                <p className="text-gray-700 font-medium">Tipo:</p>
+                <p className="text-gray-600">{solicitacaoSelecionada.conteudo || "Sem tipo"}</p>
+              </div>
+              <div>
+                <p className="text-gray-700 font-medium">Status:</p>
+                <span
+                  className={`px-2 py-1 text-xs font-medium rounded-full ${solicitacaoSelecionada.status_solicitacao === "PENDENTE"
+                      ? "bg-yellow-100 text-yellow-800"
+                      : solicitacaoSelecionada.status_solicitacao === "APROVADO"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-red-100 text-red-800"
+                    }`}
+                >
+                  {solicitacaoSelecionada.status_solicitacao || "Sem status"}
+                </span>
+              </div>
+              <div>
+                <p className="text-gray-700 font-medium">Descrição:</p>
+                <p className="text-gray-600 bg-gray-50 p-3 rounded-lg">
+                  {solicitacaoSelecionada.vitrine?.descricaoProduto || "Sem descrição"}
+                </p>
+              </div>
+            </div>
+
+            {solicitacaoSelecionada.status_solicitacao === "PENDENTE" && (
+              <div className="mt-6 flex justify-between">
+                <button
+                  onClick={() => handleRecusar(solicitacaoSelecionada.id_solicitacao)}
+                  className="flex items-center gap-2 px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                >
+                  <XCircle size={16} /> Recusar
+                </button>
+                <button
+                  onClick={() => handleAprovar(solicitacaoSelecionada.id_solicitacao)}
+                  className="flex items-center gap-2 px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                >
+                  <CheckCircle size={16} /> Aprovar
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {
+      showAvisoModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-md w-full">
             <div className="flex justify-between items-center mb-4">
@@ -443,98 +542,102 @@ export function DashboardSindi() {
             </form>
           </div>
         </div>
-      )}
+      )
+      }
 
-      {showReuniaoModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-[#2C3E50]">Agendar Reunião</h3>
-              <button onClick={() => setShowReuniaoModal(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
-              </button>
+{
+        showReuniaoModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-[#2C3E50]">Agendar Reunião</h3>
+                <button onClick={() => setShowReuniaoModal(false)} className="text-gray-500 hover:text-gray-700">
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleReuniaoSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Título</label>
+                  <input
+                    type="text"
+                    value={reuniaoData.titulo}
+                    onChange={(e) => setReuniaoData({ ...reuniaoData, titulo: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    placeholder="Assunto da reunião"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-gray-700 mb-2">Data</label>
+                    <input
+                      type="date"
+                      value={reuniaoData.data}
+                      onChange={(e) => setReuniaoData({ ...reuniaoData, data: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-gray-700 mb-2">Horário</label>
+                    <input
+                      type="time"
+                      value={reuniaoData.horario}
+                      onChange={(e) => setReuniaoData({ ...reuniaoData, horario: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Local</label>
+                  <select
+                    value={reuniaoData.local}
+                    onChange={(e) => setReuniaoData({ ...reuniaoData, local: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  >
+                    <option value="Salão de Festas">Salão de Festas</option>
+                    <option value="Área Gourmet">Área Gourmet</option>
+                    <option value="Sala de Reuniões">Sala de Reuniões</option>
+                  </select>
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-gray-700 mb-2">Descrição</label>
+                  <textarea
+                    value={reuniaoData.descricao}
+                    onChange={(e) => setReuniaoData({ ...reuniaoData, descricao: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] h-32"
+                    placeholder="Detalhes da reunião"
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowReuniaoModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                  >
+                    Agendar Reunião
+                  </button>
+                </div>
+              </form>
             </div>
-            
-            <form onSubmit={handleReuniaoSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Título</label>
-                <input
-                  type="text"
-                  value={reuniaoData.titulo}
-                  onChange={(e) => setReuniaoData({...reuniaoData, titulo: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  placeholder="Assunto da reunião"
-                  required
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                  <label className="block text-gray-700 mb-2">Data</label>
-                  <input
-                    type="date"
-                    value={reuniaoData.data}
-                    onChange={(e) => setReuniaoData({...reuniaoData, data: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-gray-700 mb-2">Horário</label>
-                  <input
-                    type="time"
-                    value={reuniaoData.horario}
-                    onChange={(e) => setReuniaoData({...reuniaoData, horario: e.target.value})}
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                    required
-                  />
-                </div>
-              </div>
-              
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Local</label>
-                <select
-                  value={reuniaoData.local}
-                  onChange={(e) => setReuniaoData({...reuniaoData, local: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                >
-                  <option value="Salão de Festas">Salão de Festas</option>
-                  <option value="Área Gourmet">Área Gourmet</option>
-                  <option value="Sala de Reuniões">Sala de Reuniões</option>
-                </select>
-              </div>
-              
-              <div className="mb-6">
-                <label className="block text-gray-700 mb-2">Descrição</label>
-                <textarea
-                  value={reuniaoData.descricao}
-                  onChange={(e) => setReuniaoData({...reuniaoData, descricao: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080] h-32"
-                  placeholder="Detalhes da reunião"
-                />
-              </div>
-              
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowReuniaoModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
-                >
-                  Agendar Reunião
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+        )
+      }
 
-      {showInadimplentesModal && (
+      {
+      showInadimplentesModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 max-w-2xl w-full">
             <div className="flex justify-between items-center mb-4">
@@ -586,199 +689,206 @@ export function DashboardSindi() {
             </div>
           </div>
         </div>
-      )}
+      )
+    }
 
-      {showCadastrarMoradorModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Morador</h3>
-              <button onClick={() => setShowCadastrarMoradorModal(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
-              </button>
-            </div>
-            
-            <form onSubmit={handleMoradorSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Nome Completo</label>
-                <input
-                  type="text"
-                  value={moradorData.nomeMorador}
-                  onChange={(e) => setMoradorData({...moradorData, nomeMorador: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                />
+      {
+        showCadastrarMoradorModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Morador</h3>
+                <button onClick={() => setShowCadastrarMoradorModal(false)} className="text-gray-500 hover:text-gray-700">
+                  ✕
+                </button>
               </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">E-mail</label>
-                <input
-                  type="email"
-                  value={moradorData.emailMorador}
-                  onChange={(e) => setMoradorData({...moradorData, emailMorador: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                />
-              </div>
+              <form onSubmit={handleMoradorSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Nome Completo</label>
+                  <input
+                    type="text"
+                    value={moradorData.nomeMorador}
+                    onChange={(e) => setMoradorData({ ...moradorData, nomeMorador: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    required
+                  />
+                </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Veículo</label>
-                <input
-                  type="text"
-                  value={moradorData.veiculoMorador}
-                  onChange={(e) => setMoradorData({...moradorData, veiculoMorador: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  placeholder="Modelo e placa do veículo"
-                />
-              </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">E-mail</label>
+                  <input
+                    type="email"
+                    value={moradorData.emailMorador}
+                    onChange={(e) => setMoradorData({ ...moradorData, emailMorador: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    required
+                  />
+                </div>
 
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Tipo</label>
-                <select
-                  value={moradorData.tipoMorador}
-                  onChange={(e) => setMoradorData({...moradorData, tipoMorador: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                >
-                  <option key="PROPRIETARIO" value="PROPRIETARIO">Proprietário</option>
-                  <option key="FAMILIAR" value="FAMILIAR">Familiar</option>
-                </select>
-              </div>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Veículo</label>
+                  <input
+                    type="text"
+                    value={moradorData.veiculoMorador}
+                    onChange={(e) => setMoradorData({ ...moradorData, veiculoMorador: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    placeholder="Modelo e placa do veículo"
+                  />
+                </div>
 
-              <div className="mb-4">
-                <div className="flex gap-4">
-                  <div className="flex-1">
-                    <label className="block text-gray-700 mb-2">Bloco</label>
-                    <input
-                      type="number"
-                      value={moradorData.bloco}
-                      onChange={(e) => setMoradorData({ ...moradorData, bloco: parseInt(e.target.value)})}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                      placeholder="Bloco"
-                    />
-                  </div>
-                  <div className="flex-1">
-                    <label className="block text-gray-700 mb-2">Apartamento</label>
-                    <input
-                      type="number"
-                      value={moradorData.apartamento}
-                      onChange={(e) => setMoradorData({ ...moradorData, apartamento: parseInt(e.target.value) })}
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                      placeholder="Apartamento"
-                    />
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Tipo</label>
+                  <select
+                    value={moradorData.tipoMorador}
+                    onChange={(e) => setMoradorData({ ...moradorData, tipoMorador: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                  >
+                    <option key="PROPRIETARIO" value="PROPRIETARIO">Proprietário</option>
+                    <option key="FAMILIAR" value="FAMILIAR">Familiar</option>
+                  </select>
+                </div>
+
+                <div className="mb-4">
+                  <div className="flex gap-4">
+                    <div className="flex-1">
+                      <label className="block text-gray-700 mb-2">Bloco</label>
+                      <input
+                        type="number"
+                        value={moradorData.bloco}
+                        onChange={(e) => setMoradorData({ ...moradorData, bloco: parseInt(e.target.value) })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                        placeholder="Bloco"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="block text-gray-700 mb-2">Apartamento</label>
+                      <input
+                        type="number"
+                        value={moradorData.apartamento}
+                        onChange={(e) => setMoradorData({ ...moradorData, apartamento: parseInt(e.target.value) })}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                        placeholder="Apartamento"
+                      />
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div className="mb-6">
-                <label className="block text-gray-700 mb-2">CPF</label>
-                <InputCpf
-                  value={moradorData.cpfMorador}
-                  onChange={(val) => setMoradorData({ ...moradorData, cpfMorador: val })}
-                />
-              </div>
+                <div className="mb-6">
+                  <label className="block text-gray-700 mb-2">CPF</label>
+                  <InputCpf
+                    value={moradorData.cpfMorador}
+                    onChange={(val) => setMoradorData({ ...moradorData, cpfMorador: val })}
+                  />
+                </div>
 
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCadastrarMoradorModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
-                >
-                  Cadastrar
-                </button>
-              </div>
-            </form>
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCadastrarMoradorModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                  >
+                    Cadastrar
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-      )}
+        )
+      }
 
-      {showCadastrarPorteiroModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Porteiro</h3>
-              <button onClick={() => setShowCadastrarPorteiroModal(false)} className="text-gray-500 hover:text-gray-700">
-                ✕
+      {
+        showCadastrarPorteiroModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-md w-full">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-xl font-bold text-[#2C3E50]">Cadastrar Porteiro</h3>
+                <button onClick={() => setShowCadastrarPorteiroModal(false)} className="text-gray-500 hover:text-gray-700">
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handlePorteiroSubmit}>
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">Nome Completo</label>
+                  <input
+                    type="text"
+                    value={porteiroData.nomePorteiro}
+                    onChange={(e) => setPorteiroData({ ...porteiroData, nomePorteiro: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    required
+                  />
+                </div>
+
+                <div className="mb-4">
+                  <label className="block text-gray-700 mb-2">E-mail</label>
+                  <input
+                    type="email"
+                    value={porteiroData.emailPorteiro}
+                    onChange={(e) => setPorteiroData({ ...porteiroData, emailPorteiro: e.target.value })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
+                    required
+                  />
+                </div>
+
+                <div className="mb-6">
+                  <label className="block text-gray-700 mb-2">CPF</label>
+                  <InputCpf
+                    value={porteiroData.cpfPorteiro}
+                    onChange={(val) => setPorteiroData({ ...porteiroData, cpfPorteiro: val })}
+                  />
+                </div>
+
+                <div className="flex justify-end space-x-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowCadastrarPorteiroModal(false)}
+                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
+                  >
+                    Cadastrar
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )
+      }
+
+      {
+        showSuccessModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+            <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
+              <div className="mb-4">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">
+                {'Cadastro realizado com sucesso!'}
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {'O novo registro foi adicionado ao sistema.'}
+              </p>
+              <button
+                onClick={() => setShowSuccessModal(false)}
+                className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
+              >
+                OK
               </button>
             </div>
-            
-            <form onSubmit={handlePorteiroSubmit}>
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">Nome Completo</label>
-                <input
-                  type="text"
-                  value={porteiroData.nomePorteiro}
-                  onChange={(e) => setPorteiroData({...porteiroData, nomePorteiro: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                />
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-gray-700 mb-2">E-mail</label>
-                <input
-                  type="email"
-                  value={porteiroData.emailPorteiro}
-                  onChange={(e) => setPorteiroData({...porteiroData, emailPorteiro: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#008080]"
-                  required
-                />
-              </div>
-
-              <div className="mb-6">
-                <label className="block text-gray-700 mb-2">CPF</label>
-                <InputCpf
-                  value={porteiroData.cpfPorteiro}
-                  onChange={(val) => setPorteiroData({ ...porteiroData, cpfPorteiro: val })}
-                />
-              </div>
-
-              <div className="flex justify-end space-x-3">
-                <button
-                  type="button"
-                  onClick={() => setShowCadastrarPorteiroModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  className="px-6 py-2 bg-[#008080] text-white rounded-lg hover:bg-[#006666]"
-                >
-                  Cadastrar
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
-
-      {showSuccessModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-sm w-full text-center">
-            <div className="mb-4">
-              <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
-            </div>
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
-              {'Cadastro realizado com sucesso!'}
-            </h3>
-            <p className="text-gray-600 mb-6">
-              {'O novo registro foi adicionado ao sistema.'}
-            </p>
-            <button
-              onClick={() => setShowSuccessModal(false)}
-              className="px-6 py-2 bg-[#2C3E50] text-white rounded-lg hover:bg-[#1a2633]"
-            >
-              OK
-            </button>
-          </div>
-        </div>
-      )}
+        )
+      }
     </div>
   );
 }
