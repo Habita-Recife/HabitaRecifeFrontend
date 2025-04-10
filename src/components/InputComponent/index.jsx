@@ -11,7 +11,7 @@ const InputComponent = ({
   inputMode, 
   maxLength, 
   showEyeIcon = true,
-  name // Adicionei esta prop que estava faltando
+  name 
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const isPassword = typeInput === 'password';
@@ -51,7 +51,7 @@ InputComponent.propTypes = {
   inputMode: PropTypes.string,
   maxLength: PropTypes.number,
   showEyeIcon: PropTypes.bool,
-  name: PropTypes.string // Adicionei esta prop type
+  name: PropTypes.string
 };
 
 export default InputComponent;

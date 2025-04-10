@@ -6,7 +6,6 @@ const SidebarPorteiro = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    console.log("Usuário deslogado");
     navigate("/login");
   };
 

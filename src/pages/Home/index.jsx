@@ -6,7 +6,6 @@ import womanImage from "../../assets/Womanimage.png";
 import condominioImage from "../../assets/imagemCondo.png";
 import { Building2, Users, Shield, Clock, MessageSquare, Phone, Mail, MapPin, Wallet, Bell, ShoppingBag, AlertCircle } from "lucide-react";
 
-// essas sao as animacoes  q eu pesquisei, e to testando
 const container = {
   hidden: { opacity: 0 },
   show: {
@@ -253,7 +252,6 @@ export function Home() {
         </div>
       </motion.section>
 
-      {/* to botando animacao em tudo, se ficar feio eu tiro */}
       <motion.section 
         id="nossos-servicos" 
         className="py-8 bg-[#1e2a38]"
@@ -346,7 +344,6 @@ export function Home() {
         </div>
       </motion.section>
 
-      {/* testando varias animacoes com o farm motion kkkk */}
       <motion.footer 
         className="bg-black text-white py-8 sm:py-12"
         initial={{ opacity: 0 }}

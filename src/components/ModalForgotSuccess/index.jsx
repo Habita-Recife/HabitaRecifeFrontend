@@ -2,8 +2,6 @@ import { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import ButtonComponent from "../ButtonComponent";
 
-// coloquei esse css aqui pq nao sei se vou usar em outro lugar, serve pra fazer a animacao de check
-// eu achei legal dms kkk
 const checkmarkStyle = `
 @keyframes draw {
   to {

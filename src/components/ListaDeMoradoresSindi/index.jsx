@@ -123,61 +123,64 @@ export default function ListaDeMoradoresSindi(props) {
       </div>
       
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento/Bloco</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo/Placa</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredMoradores.map((morador) => (
-              <tr key={morador.idMorador} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nomeMorador}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpfMorador}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento + " - Bloco " + morador.bloco}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.veiculoMorador || "Não informado"}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Familiar'}</td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-                    morador.inadimplente ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
-                  }`}>
-                    {morador.inadimplente ? 'Inadimplente' : 'Em dia'}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                  <button 
-                    onClick={() => setShowDetailsModal(morador)}
-                    className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
-                    title="Ver detalhes"
-                  >
-                    <Eye className="w-4 h-4 inline" /> Ver
-                  </button>
-                  <button 
-                    onClick={() => handleEdit(morador)}
-                    className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
-                    title="Editar"
-                  >
-                    <Edit className="w-4 h-4 inline" /> Editar
-                  </button>
-                  <button 
-                    onClick={() => setShowDeleteConfirm(morador.idMorador)}
-                    className="text-red-600 hover:text-red-800"
-                    title="Excluir"
-                  >
-                    <Trash2 className="w-4 h-4 inline" /> Excluir
-                  </button>
-                </td>
+        <div className="max-h-[300px] overflow-y-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50 sticky top-0 z-10">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">CPF</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apartamento/Bloco</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Veículo/Placa</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {filteredMoradores.map((morador) => (
+                <tr key={morador.idMorador} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{morador.nomeMorador}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.cpfMorador}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.apartamento + " - Bloco " + morador.bloco}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.veiculoMorador || "Não informado"}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{morador.tipoMorador === 'PROPRIETARIO' ? 'Proprietário' : 'Familiar'}</td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 py-1 text-xs font-medium rounded-full ${
+                      morador.inadimplente ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {morador.inadimplente ? 'Inadimplente' : 'Em dia'}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <button 
+                      onClick={() => setShowDetailsModal(morador)}
+                      className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
+                      title="Ver detalhes"
+                    >
+                      <Eye className="w-4 h-4 inline" /> Ver
+                    </button>
+                    <button 
+                      onClick={() => handleEdit(morador)}
+                      className="text-[#2C3E50] hover:text-[#1a2633] mr-3"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4 inline" /> Editar
+                    </button>
+                    <button 
+                      onClick={() => setShowDeleteConfirm(morador.idMorador)}
+                      className="text-red-600 hover:text-red-800"
+                      title="Excluir"
+                    >
+                      <Trash2 className="w-4 h-4 inline" /> Excluir
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
 
       
       {showDeleteConfirm && (
