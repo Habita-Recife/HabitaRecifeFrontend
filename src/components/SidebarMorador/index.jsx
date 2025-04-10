@@ -54,7 +54,7 @@ const SidebarMorador = () => {
         <SidebarButton icon={<Home size={18} />} text="Início" onClick={() => handleButtonClick("Início")} />
         <SidebarButton icon={<FileText size={18} />} text="Solicitações" onClick={() => handleButtonClick("Solicitações")} />
         <SidebarButton icon={<Wallet size={18} />} text="Controle Financeiro" onClick={() => handleButtonClick("Controle Financeiro")} />
-        <SidebarButton icon={<Headphones size={18} />} text="Serviços" onClick={() => handleButtonClick("Serviços")} />
+        <SidebarButton icon={<Headphones size={18} />} text="Vitrine" onClick={() => handleButtonClick("Vitrine")} />
       </div>
     </div>
   );

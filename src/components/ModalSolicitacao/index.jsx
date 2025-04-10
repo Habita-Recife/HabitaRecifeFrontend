@@ -39,22 +39,20 @@ const ModalSolicitacao = ({
           <div className="grid grid-cols-3 gap-2">
             <button
               onClick={() => setTipoSolicitacao('POSTAGEM_VITRINE')}
-              className={`py-2 px-4 rounded-lg border ${
-                tipoSolicitacao === 'POSTAGEM_VITRINE'
+              className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'POSTAGEM_VITRINE'
                   ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
                   : 'border-gray-300'
-              }`}
+                }`}
             >
               Vitrine
             </button>
             <ButtonReserva />
             <button
               onClick={() => setTipoSolicitacao('Aviso')}
-              className={`py-2 px-4 rounded-lg border ${
-                tipoSolicitacao === 'Aviso'
+              className={`py-2 px-4 rounded-lg border ${tipoSolicitacao === 'Aviso'
                   ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
                   : 'border-gray-300'
-              }`}
+                }`}
             >
               Aviso
             </button>
@@ -69,21 +67,19 @@ const ModalSolicitacao = ({
               <div className="grid grid-cols-2 gap-2">
                 <button
                   onClick={() => setTipoVitrine('SERVICO')}
-                  className={`py-2 px-4 rounded-lg border ${
-                    tipoVitrine === 'SERVICO'
+                  className={`py-2 px-4 rounded-lg border ${tipoVitrine === 'SERVICO'
                       ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
                       : 'border-gray-300'
-                  }`}
+                    }`}
                 >
                   Serviço
                 </button>
                 <button
                   onClick={() => setTipoVitrine('PRODUTO')}
-                  className={`py-2 px-4 rounded-lg border ${
-                    tipoVitrine === 'PRODUTO'
+                  className={`py-2 px-4 rounded-lg border ${tipoVitrine === 'PRODUTO'
                       ? 'border-[rgb(0,128,128)] bg-[rgba(0,128,128,0.1)]'
                       : 'border-gray-300'
-                  }`}
+                    }`}
                 >
                   Produto
                 </button>
@@ -116,7 +112,7 @@ const ModalSolicitacao = ({
               <label className="block text-gray-700 mb-2">Telefone de Contato</label>
               <input
                 type="tel"
-                value={telefoneContato}
+                value={telefoneContato || ''}
                 onChange={(e) => setTelefoneContato(e.target.value)}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[rgb(0,128,128)]"
                 placeholder="Digite o telefone de contato"

@@ -7,7 +7,7 @@ const API_URL = 'http://localhost:8080';
  * Login
  */
 export function loginUser(email, password) {
-    
+
     return axios.post(`${API_URL}/v1/users/login`, {
         email,
         password
@@ -71,7 +71,7 @@ export function editarSindico(idSindico, sindico) {
 
 export function excluirSindico(idSindico) {
     const token = localStorage.getItem('token');
-    return axios.delete(`${API_URL}/v1/sindico/${idSindico}`,  {
+    return axios.delete(`${API_URL}/v1/sindico/${idSindico}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -102,30 +102,30 @@ export function listarVisitantes() {
 export const registrarSaidaVisitante = (idVisitante, idPorteiro) => {
     const token = localStorage.getItem('token');
     const fluxoDTO = {
-      idPorteiro: idPorteiro,
-      idVisitante: idVisitante,
-      tipoFluxo: "SAIDA",
-      statusFluxo: "INATIVO"
+        idPorteiro: idPorteiro,
+        idVisitante: idVisitante,
+        tipoFluxo: "SAIDA",
+        statusFluxo: "INATIVO"
     };
     return axios.post(`${API_URL}/v1/fluxo/saida`, fluxoDTO, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     });
-  };
-  
-  /**
- * Porteiro
- */
+};
 
-  export const obterDadosPorteiroLogado = () => {
+/**
+* Porteiro
+*/
+
+export const obterDadosPorteiroLogado = () => {
     const token = localStorage.getItem('token');
     return axios.get(`${API_URL}/v1/porteiro/logado`, {
-      headers: {
-        Authorization: `Bearer ${token}`
-      }
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
     });
-  };
+};
 
 /**
  * Morador
@@ -281,4 +281,41 @@ export function listarVisitantesPorPorteiroAtivoPorMorador(idPorteiro, idMorador
         headers: {
             Authorization: `Bearer ${token}`
         }
-    });}
+    });
+}
+
+export function enviarSolicitacaoVitrine(solicitacao) {
+    const token = localStorage.getItem('token');
+    return axios.post(`${API_URL}/v1/solicitacao`, solicitacao, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function aprovarSolicitacao(id) {
+    const token = localStorage.getItem('token');
+    return axios.put(`${API_URL}/v1/solicitacao/${id}/aprovar`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function recusarSolicitacao(id) {
+    const token = localStorage.getItem('token');
+    return axios.put(`${API_URL}/v1/solicitacao/${id}/recusar`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
+
+export function listarVitrine() {
+    const token = localStorage.getItem('token');
+    return axios.get(`${API_URL}/v1/vitrine`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
+}
