@@ -112,6 +112,7 @@ export function SolicitacaoMorador() {
 
   const enviarSolicitacao = async () => {
     if (!tipoSolicitacao || !nomeProduto || !descricaoProduto) {
+
       return;
     }
 
