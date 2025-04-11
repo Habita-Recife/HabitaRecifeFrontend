@@ -117,7 +117,6 @@ export function DashboardPorteiro() {
       })
       .catch(error => {
         console.error("Erro ao cadastrar visitante:", error);
-        alert("Erro ao cadastrar visitante: " + (error.response?.data?.message || error.message));
       });
   };
 
@@ -126,7 +125,6 @@ export function DashboardPorteiro() {
 
     if (!idVisitante) {
       console.error("ID do visitante é undefined ou null");
-      alert("Erro: ID do visitante não encontrado");
       return;
     }
 
@@ -140,7 +138,6 @@ export function DashboardPorteiro() {
       })
       .catch(error => {
         console.error("Erro ao registrar saída:", error);
-        alert("Erro ao registrar saída: " + (error.response?.data?.message || error.message));
       });
   };
 

@@ -53,7 +53,6 @@ export function FinanceiroSindi() {
     ];
 
     const handleGerarRelatorio = () => {
-        alert('Relatório gerado com sucesso!');
     };
 
     const formatarValor = (valor) => {
